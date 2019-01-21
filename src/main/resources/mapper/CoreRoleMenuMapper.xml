@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ys.core.dao.CoreRoleMenuMapper">
+	<insert id="insertCoreRoleMenu"  parameterType="org.ys.core.model.CoreRoleMenu">
+		INSERT INTO core_role_menu(core_menu_id, core_role_id)
+		VALUES(#{coreMenuId},#{coreRoleId})
+	</insert>
+	<delete id="delCoreRoleMenuByMenuId" parameterType="java.lang.Long">
+		delete from core_role_menu where core_menu_id=#{coreMenuId}
+	</delete>
+	
+	<delete id="delCoreRoleMenuByRoleId" parameterType="java.lang.Long">
+		delete from core_role_menu where core_role_id=#{coreRoleId}
+	</delete>
+</mapper>
