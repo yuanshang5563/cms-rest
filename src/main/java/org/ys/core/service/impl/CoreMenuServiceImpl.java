@@ -3,6 +3,7 @@ package org.ys.core.service.impl;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.ys.common.constant.CoreMenuContant;
 import org.ys.common.page.PageBean;
 import org.ys.core.dao.CoreMenuMapper;
 import org.ys.core.model.CoreMenu;
@@ -10,6 +11,7 @@ import org.ys.core.model.CoreMenuExample;
 import org.ys.core.model.CoreMenuExample.Criteria;
 import org.ys.core.service.CoreMenuService;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -113,11 +115,67 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 	}
 
 	@Override
-	public List<CoreMenu> listCoreMenusByUserId(Long coreUserId) {
-		if(null == coreUserId) {
+	public List<CoreMenu> listCoreMenusByUserId(Long coreUserId){
+		if(null == coreUserId){
 			return null;
 		}
 		return coreMenuMapper.listCoreMenusByUserId(coreUserId);
 	}
 
+	@Override
+	public List<CoreMenu> findTree(Long coreUserId, String menuType) {
+		List<CoreMenu> coreMenus = new ArrayList<>();
+		List<CoreMenu> menus = findByCoreUserId(coreUserId);
+		for (CoreMenu menu : menus) {
+			if (menu.getParentCoreMenuId() == null || menu.getParentCoreMenuId() == 0) {
+				menu.setLevel(0);
+				if(!exists(coreMenus, menu)) {
+					coreMenus.add(menu);
+				}
+			}
+		}
+		coreMenus.sort((o1, o2) -> o1.getOrderNum().compareTo(o2.getOrderNum()));
+		findChildren(coreMenus, menus, menuType);
+		return null;
+	}
+
+	private List<CoreMenu> findByCoreUserId(Long coreUserId) {
+//		CoreMenuExample example = new CoreMenuExample();
+//		if(StringUtils.isEmpty(userName) || "superAdmin".equals(userName)) {
+//			return coreMenuMapper.selectByExample(example);
+//		}
+		return coreMenuMapper.listCoreMenusByUserId(coreUserId);
+	}
+
+	private void findChildren(List<CoreMenu> coreMenus, List<CoreMenu> menus, String menuType) {
+		for (CoreMenu coreMenu : coreMenus) {
+			List<CoreMenu> children = new ArrayList<>();
+			for (CoreMenu menu : menus) {
+				if(menuType == CoreMenuContant.MENU_TYPE_MENU && menu.getMenuType() == CoreMenuContant.MENU_TYPE_BUTTON) {
+					// 如果是获取类型不需要按钮，且菜单类型是按钮的，直接过滤掉
+					continue ;
+				}
+				if (coreMenu.getCoreMenuId() != null && coreMenu.getCoreMenuId().equals(menu.getParentCoreMenuId())) {
+					menu.setParentMenuName(coreMenu.getMenuName());
+					menu.setLevel(coreMenu.getLevel() + 1);
+					if(!exists(children, menu)) {
+						children.add(menu);
+					}
+				}
+			}
+			coreMenu.setChildren(children);
+			children.sort((o1, o2) -> o1.getOrderNum().compareTo(o2.getOrderNum()));
+			findChildren(children, menus, menuType);
+		}
+	}
+
+	private boolean exists(List<CoreMenu> sysMenus, CoreMenu sysMenu) {
+		boolean exist = false;
+		for(CoreMenu menu:sysMenus) {
+			if(menu.getCoreMenuId().equals(sysMenu.getCoreMenuId())) {
+				exist = true;
+			}
+		}
+		return exist;
+	}
 }

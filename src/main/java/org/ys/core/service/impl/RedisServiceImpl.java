@@ -34,7 +34,7 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.opsForList().leftPush(RedisKeyContant.CORE_MENU_ALL_MENUS, allMenuList);
         example.clear();
 
-        example.createCriteria().andMenuTypeEqualTo(CoreMenuContant.MENU_TYPE_PERMISSION);
+        example.createCriteria().andMenuTypeEqualTo(CoreMenuContant.MENU_TYPE_BUTTON);
         List<CoreMenu> allPermissionList = coreMenuService.queryCoreMenusByExample(example);
         redisTemplate.opsForList().leftPush(RedisKeyContant.CORE_MENU_ALL_PERMISSION, allPermissionList);
         CoreParameterExample paramExample = new CoreParameterExample();

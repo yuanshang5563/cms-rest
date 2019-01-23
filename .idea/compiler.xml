@@ -12,7 +12,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="cms-rest" options="-parameters" />
+      <module name="cms-rest" options="" />
     </option>
   </component>
 </project>
