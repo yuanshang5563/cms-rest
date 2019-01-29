@@ -5,6 +5,7 @@ import java.util.List;
 import org.ys.common.page.PageBean;
 import org.ys.core.model.CoreRole;
 import org.ys.core.model.CoreRoleExample;
+import org.ys.core.model.CoreRoleMenu;
 
 /**
  * 角色操作接口
@@ -64,14 +65,6 @@ public interface CoreRoleService {
 	 * @throws Exception
 	 */
 	public PageBean<CoreRole> pageCoreRolesByExample(CoreRoleExample example, int pageNum, int pageSize) throws Exception;
-
-	/**
-	 * 保存角色及其权限
-	 * @param coreRole
-	 * @param coreMenuIdArr
-	 * @throws Exception
-	 */
-	public void saveOrUpdateCoreRoleAndCoreMenu(CoreRole coreRole, String[] coreMenuIdArr) throws Exception;
 
 	/**
 	 * 查找某个用户的角色

@@ -6,6 +6,8 @@ import org.ys.core.dao.CoreUserRoleMapper;
 import org.ys.core.model.CoreUserRole;
 import org.ys.core.service.CoreUserRoleService;
 
+import java.util.List;
+
 @Service("coreUserRoleService")
 public class CoreUserRoleServiceImpl implements CoreUserRoleService {
 	@Autowired
@@ -32,4 +34,11 @@ public class CoreUserRoleServiceImpl implements CoreUserRoleService {
 		}
 	}
 
+	@Override
+	public List<CoreUserRole> findCoreUserRoleByUserId(Long coreUserId){
+		if(null == coreUserId) {
+			return null;
+		}
+		return coreUserRoleMapper.findCoreUserRoleByUserId(coreUserId);
+	}
 }

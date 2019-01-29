@@ -74,10 +74,9 @@ public interface CoreUserService {
 	/**
 	 * 更新用户及其权限
 	 * @param coreUser
-	 * @param roles
 	 * @throws Exception
 	 */
-	public void saveOrUpdateCoreUserAndRoles(CoreUser coreUser, String[] roles) throws Exception;
+	public void updateCoreUserAndRoles(CoreUser coreUser) throws Exception;
 
 	/**
 	 * 获取字典Map

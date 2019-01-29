@@ -96,21 +96,21 @@ public class CoreUserServiceImpl implements CoreUserService {
 	}
 
 	@Override
-	public void saveOrUpdateCoreUserAndRoles(CoreUser coreUser, String[] roles) throws Exception {
+	public void updateCoreUserAndRoles(CoreUser coreUser) throws Exception {
 		if(null != coreUser) {
-			if(null == coreUser.getCoreUserId() || coreUser.getCoreUserId() == 0) {
+			if(null == coreUser.getCoreUserId() || coreUser.getCoreUserId() == 0l) {
+                coreUser.setCreatedTime(new Date());
 				coreUserMapper.insert(coreUser);
 			}else {
 				coreUser.setModifiedTime(new Date());
 				coreUserMapper.updateByPrimaryKey(coreUser);
 			}
 			//更新角色映射
-			if(null != roles && roles.length > 0) {
+			List<CoreUserRole> userRoles = coreUser.getUserRoles();
+			if(null != userRoles && userRoles.size() > 0) {
 				coreUserRoleMapper.delCoreUserRoleByUserId(coreUser.getCoreUserId());
-				for (String coreRoleId : roles) {
-					CoreUserRole coreUserRole = new CoreUserRole();
-					coreUserRole.setCoreRoleId(Long.parseLong(coreRoleId));
-					coreUserRole.setCoreUserId(coreUser.getCoreUserId());
+				for (CoreUserRole coreUserRole : userRoles) {
+                    coreUserRole.setCoreUserId(coreUser.getCoreUserId());
 					coreUserRoleMapper.insertCoreUserRole(coreUserRole);
 				}				
 			}

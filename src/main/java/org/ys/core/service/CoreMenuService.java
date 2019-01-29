@@ -93,7 +93,15 @@ public interface CoreMenuService {
 	 * 查询菜单树,用户ID和用户名为空则查询全部
 	 * @param coreUserId
 	 * @param menuType 获取菜单类型，0：获取所有菜单，包含按钮，1：获取所有菜单，不包含按钮
+	 * @param menuName
 	 * @return
 	 */
-	public List<CoreMenu> findTree(Long coreUserId, String menuType);
+	public List<CoreMenu> findTree(Long coreUserId, String menuType,String menuName);
+
+	/**
+	 * 查找某个用户的菜单或权限集合
+	 * @param coreRoleId
+	 * @return
+	 */
+	public List<CoreMenu> listCoreMenusByRoleId(Long coreRoleId);
 }

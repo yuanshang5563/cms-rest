@@ -54,7 +54,7 @@ public interface CoreDeptService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<CoreDept>queryCoreDeptsByExample(CoreDeptExample example) throws Exception;
+	public List<CoreDept> queryCoreDeptsByExample(CoreDeptExample example) throws Exception;
 
 	/**
 	 * 根据指定条件分页
@@ -81,4 +81,11 @@ public interface CoreDeptService {
 	 * @throws Exception
 	 */
 	public Set<CoreDept> queryAllSubCoreDeptsByDeptId(Long coreDeptId) throws Exception;
+
+	/**
+	 * 查询dept
+	 * @param deptName
+	 * @return
+	 */
+	public List<CoreDept> findTree(String deptName);
 }

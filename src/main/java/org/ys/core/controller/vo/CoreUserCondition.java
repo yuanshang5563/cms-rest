@@ -4,6 +4,8 @@ import org.ys.common.vo.BasecCondition;
 
 public class CoreUserCondition extends BasecCondition {
     private String userName;
+    private String realName;
+    private String sex;
 
     public String getUserName() {
         return userName;
@@ -11,5 +13,21 @@ public class CoreUserCondition extends BasecCondition {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 }

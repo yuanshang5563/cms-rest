@@ -6,6 +6,8 @@ import org.ys.core.dao.CoreRoleMenuMapper;
 import org.ys.core.model.CoreRoleMenu;
 import org.ys.core.service.CoreRoleMenuService;
 
+import java.util.List;
+
 @Service("coreRoleMenuService")
 public class CoreRoleMenuServiceImpl implements CoreRoleMenuService {
 	@Autowired
@@ -15,6 +17,19 @@ public class CoreRoleMenuServiceImpl implements CoreRoleMenuService {
 	public void insertCoreRoleMenu(CoreRoleMenu coreRoleMenu) {
 		if(null != coreRoleMenu) {
 			coreRoleMenuMapper.insertCoreRoleMenu(coreRoleMenu);
+		}
+	}
+
+	@Override
+	public void saveRoleMenus(List<CoreRoleMenu> coreRoleMenuList) throws Exception {
+		if(null != coreRoleMenuList && coreRoleMenuList.size() > 0) {
+			//更新角色菜单映射
+			coreRoleMenuMapper.delCoreRoleMenuByRoleId(coreRoleMenuList.get(0).getCoreRoleId());
+			for (CoreRoleMenu coreRoleMenu : coreRoleMenuList) {
+				if(null != coreRoleMenu.getCoreRoleId() && null != coreRoleMenu.getCoreMenuId()) {
+					coreRoleMenuMapper.insertCoreRoleMenu(coreRoleMenu);
+				}
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 package org.ys.core.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.constant.CoreMenuContant;
@@ -11,10 +12,7 @@ import org.ys.core.model.CoreMenuExample;
 import org.ys.core.model.CoreMenuExample.Criteria;
 import org.ys.core.service.CoreMenuService;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service("coreMenuService")
 public class CoreMenuServiceImpl implements CoreMenuService{
@@ -123,27 +121,41 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 	}
 
 	@Override
-	public List<CoreMenu> findTree(Long coreUserId, String menuType) {
+	public List<CoreMenu> listCoreMenusByRoleId(Long coreRoleId){
+		if(null == coreRoleId){
+			return null;
+		}
+		return coreMenuMapper.listCoreMenusByRoleId(coreRoleId);
+	}
+
+	@Override
+	public List<CoreMenu> findTree(Long coreUserId, String menuType,String menuName) {
 		List<CoreMenu> coreMenus = new ArrayList<>();
-		List<CoreMenu> menus = findByCoreUserId(coreUserId);
+		List<CoreMenu> menus = findByCoreUserId(coreUserId,menuName);
 		for (CoreMenu menu : menus) {
-			if (menu.getParentCoreMenuId() == null || menu.getParentCoreMenuId() == 0) {
+			if (menu.getParentCoreMenuId() == null){
+				continue;
+			}
+			if (menu.getParentCoreMenuId() == 0) {
 				menu.setLevel(0);
 				if(!exists(coreMenus, menu)) {
 					coreMenus.add(menu);
 				}
 			}
 		}
-		coreMenus.sort((o1, o2) -> o1.getOrderNum().compareTo(o2.getOrderNum()));
+		sortCoreMenuList(coreMenus);
 		findChildren(coreMenus, menus, menuType);
-		return null;
+		return coreMenus;
 	}
 
-	private List<CoreMenu> findByCoreUserId(Long coreUserId) {
-//		CoreMenuExample example = new CoreMenuExample();
-//		if(StringUtils.isEmpty(userName) || "superAdmin".equals(userName)) {
-//			return coreMenuMapper.selectByExample(example);
-//		}
+	private List<CoreMenu> findByCoreUserId(Long coreUserId,String menuName) {
+		CoreMenuExample example = new CoreMenuExample();
+		if(null == coreUserId) {
+			if(StringUtils.isNotEmpty(menuName)){
+				example.createCriteria().andMenuNameLike("%"+menuName.trim()+"%");
+			}
+			return coreMenuMapper.selectByExample(example);
+		}
 		return coreMenuMapper.listCoreMenusByUserId(coreUserId);
 	}
 
@@ -164,9 +176,17 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 				}
 			}
 			coreMenu.setChildren(children);
-			children.sort((o1, o2) -> o1.getOrderNum().compareTo(o2.getOrderNum()));
+			sortCoreMenuList(children);
 			findChildren(children, menus, menuType);
 		}
+	}
+	private void sortCoreMenuList(List<CoreMenu> children){
+		Collections.sort(children,new Comparator<CoreMenu>() {
+			@Override
+			public int compare(CoreMenu o1, CoreMenu o2) {
+				return o1.getOrderNum() - o2.getOrderNum();
+			}
+		});
 	}
 
 	private boolean exists(List<CoreMenu> sysMenus, CoreMenu sysMenu) {

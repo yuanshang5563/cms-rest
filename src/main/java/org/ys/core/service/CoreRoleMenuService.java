@@ -2,6 +2,8 @@ package org.ys.core.service;
 
 import org.ys.core.model.CoreRoleMenu;
 
+import java.util.List;
+
 /**
  * 角色和菜单或权限的关联接口
  */
@@ -11,6 +13,13 @@ public interface CoreRoleMenuService {
 	 * @param coreRoleMenu
 	 */
 	public void insertCoreRoleMenu(CoreRoleMenu coreRoleMenu);
+
+	/**
+	 * 保存角色及其权限
+	 * @param coreRoleMenuList
+	 * @throws Exception
+	 */
+	public void saveRoleMenus(List<CoreRoleMenu> coreRoleMenuList) throws Exception;
 
 	/**
 	 * 清除某个菜单或权限的与角色的关联

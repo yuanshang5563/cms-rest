@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.ys.core.dao.CoreUserRoleMapper">
+	<resultMap id="BaseResultMap" type="org.ys.core.model.CoreUserRole">
+		<id column="core_user_id" jdbcType="BIGINT" property="coreUserId" />
+		<id column="core_role_id" jdbcType="BIGINT" property="coreRoleId" />
+	</resultMap>
 	<insert id="insertCoreUserRole"  parameterType="org.ys.core.model.CoreUserRole">
 		INSERT INTO core_user_role(core_user_id, core_role_id)
 		VALUES(#{coreUserId},#{coreRoleId})
@@ -12,4 +16,8 @@
 	<delete id="delCoreUserRoleByRoleId" parameterType="java.lang.Long">
 		delete from core_user_role where core_role_id=#{coreRoleId}
 	</delete>
+
+	<select id="findCoreUserRoleByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+		select ur.* from core_user_role ur where ur.core_user_id=#{coreUserId}
+    </select>
 </mapper>

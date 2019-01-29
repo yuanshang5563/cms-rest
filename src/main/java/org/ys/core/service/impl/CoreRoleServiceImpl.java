@@ -78,29 +78,6 @@ public class CoreRoleServiceImpl implements CoreRoleService {
 	}
 
 	@Override
-	public void saveOrUpdateCoreRoleAndCoreMenu(CoreRole coreRole, String[] coreMenuIdArr) throws Exception {
-		if(null != coreRole) {
-			if(null == coreRole.getCoreRoleId() || coreRole.getCoreRoleId() == 0) {
-				coreRoleMapper.insert(coreRole);
-			}else {
-				coreRoleMapper.updateByPrimaryKey(coreRole);
-			}
-			//更新角色菜单映射
-			coreRoleMenuMapper.delCoreRoleMenuByRoleId(coreRole.getCoreRoleId());
-			if(null != coreMenuIdArr && coreMenuIdArr.length > 0) {
-				for (String coreMenuId : coreMenuIdArr) {
-					if(StringUtils.isNotEmpty(coreMenuId)) {
-						CoreRoleMenu coreRoleMenu = new CoreRoleMenu();
-						coreRoleMenu.setCoreMenuId(Long.parseLong(coreMenuId.trim()));
-						coreRoleMenu.setCoreRoleId(coreRole.getCoreRoleId());
-						coreRoleMenuMapper.insertCoreRoleMenu(coreRoleMenu);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
 	public List<CoreRole> listCoreRolesByUserId(Long coreUserId) {
 		if(null == coreUserId) {
 			return null;

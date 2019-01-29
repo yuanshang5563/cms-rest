@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
@@ -119,4 +120,40 @@ public class CoreDeptServiceImpl implements CoreDeptService {
 		return queryAllSubCoreDeptsByDeptId(coreDeptId,allSubDepts,allDepts);
 	}
 
+	@Override
+	public List<CoreDept> findTree(String deptName){
+		List<CoreDept> deptList = new ArrayList<>();
+		CoreDeptExample example = new CoreDeptExample();
+		Criteria criteria = example.createCriteria();
+		if(StringUtils.isNotEmpty(deptName)){
+			criteria.andDeptNameLike("%"+deptName.trim()+"%");
+		}
+		List<CoreDept> allDepts = coreDeptMapper.selectByExample(example);
+		for (CoreDept dept : allDepts) {
+			if(dept.getParentCoreDeptId() == null){
+				continue;
+			}
+			if (dept.getParentCoreDeptId() == 0) {
+				dept.setLevel(0);
+				deptList.add(dept);
+			}
+		}
+		findChildren(deptList, allDepts);
+		return deptList;
+	}
+
+	private void findChildren(List<CoreDept> deptList, List<CoreDept> allDepts) {
+		for (CoreDept coreDept : deptList) {
+			List<CoreDept> children = new ArrayList<>();
+			for (CoreDept dept : allDepts) {
+				if (coreDept.getCoreDeptId() != null && coreDept.getCoreDeptId().equals(dept.getParentCoreDeptId())) {
+					dept.setParentDeptName(coreDept.getDeptName());
+					dept.setLevel(coreDept.getLevel() + 1);
+					children.add(dept);
+				}
+			}
+			coreDept.setChildren(children);
+			findChildren(children, allDepts);
+		}
+	}
 }
