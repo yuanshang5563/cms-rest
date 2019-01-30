@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.constant.CoreMenuContant;
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreMenuCondition;
 import org.ys.core.dao.CoreMenuMapper;
 import org.ys.core.model.CoreMenu;
 import org.ys.core.model.CoreMenuExample;
@@ -97,8 +98,7 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 		}
 		Set<CoreMenu> allSubMenus = new HashSet<>();
 		//一次找出所有节点然后处理
-		CoreMenuExample example = new CoreMenuExample();
-		List<CoreMenu> allMenus = coreMenuMapper.selectByExample(example);
+		List<CoreMenu> allMenus = queryAll();
 		return queryAllSubCoreMenusByMenuId(coreMenuId,allSubMenus,allMenus);
 	}
 
@@ -128,10 +128,16 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 		return coreMenuMapper.listCoreMenusByRoleId(coreRoleId);
 	}
 
-	@Override
-	public List<CoreMenu> findTree(Long coreUserId, String menuType,String menuName) {
+    @Override
+    public List<CoreMenu> queryAll() throws Exception {
+        CoreMenuExample example = new CoreMenuExample();
+        return coreMenuMapper.selectByExample(example);
+    }
+
+    @Override
+	public List<CoreMenu> findTree(CoreMenuCondition coreMenuCondition, String menuType) {
 		List<CoreMenu> coreMenus = new ArrayList<>();
-		List<CoreMenu> menus = findByCoreUserId(coreUserId,menuName);
+		List<CoreMenu> menus = findByCoreUserId(coreMenuCondition.getCoreUserId(),coreMenuCondition.getMenuName());
 		for (CoreMenu menu : menus) {
 			if (menu.getParentCoreMenuId() == null){
 				continue;

@@ -78,15 +78,15 @@ public interface CoreUserService {
 	 */
 	public void updateCoreUserAndRoles(CoreUser coreUser) throws Exception;
 
-	/**
-	 * 获取字典Map
-	 * @return
-	 */
-	public Map<String,List<CoreDictionaries>> initDictionaries();
-
-    /**
-     * 替换用户中的数据字典码为值
-     * @param coreUsers
-     */
-    public void convertCoreUsersDictionaries(List<CoreUser> coreUsers);
+//	/**
+//	 * 获取字典Map
+//	 * @return
+//	 */
+//	public Map<String,List<CoreDictionaries>> initDictionaries();
+//
+//    /**
+//     * 替换用户中的数据字典码为值
+//     * @param coreUsers
+//     */
+//    public void convertCoreUsersDictionaries(List<CoreUser> coreUsers);
 }

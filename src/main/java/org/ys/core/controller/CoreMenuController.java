@@ -3,6 +3,7 @@ package org.ys.core.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
+import org.ys.core.controller.vo.CoreMenuCondition;
 import org.ys.core.model.CoreMenu;
 import org.ys.core.model.CoreMenuExample;
 import org.ys.core.service.CoreMenuService;
@@ -15,18 +16,22 @@ public class CoreMenuController {
     @Autowired
     private CoreMenuService coreMenuService;
 
-    @GetMapping(value="/findNavTree")
-    public HttpResult findNavTree(@RequestParam Long coreUserId) {
+    @PostMapping(value="/findNavTree")
+    public HttpResult findNavTree(@RequestBody CoreMenuCondition coreMenuCondition) {
+        Long coreUserId = coreMenuCondition.getCoreUserId();
         if(null == coreUserId || coreUserId == 0){
             return HttpResult.error("用户id为空！");
         }
-        List<CoreMenu> coreMenus = coreMenuService.findTree(11l,"1",null);
+        coreMenuCondition.setCoreUserId(11l);
+        coreMenuCondition.setMenuName(null);
+        List<CoreMenu> coreMenus = coreMenuService.findTree( coreMenuCondition,"1");
         return HttpResult.ok(coreMenus);
     }
 
-    @GetMapping(value="/findCoreMenuTree")
-    public HttpResult findCoreMenuTree(@RequestParam(required = false) String menuName) {
-        List<CoreMenu> coreMenus = coreMenuService.findTree(null,"0",menuName);
+    @PostMapping(value="/findCoreMenuTree")
+    public HttpResult findCoreMenuTree(@RequestBody CoreMenuCondition coreMenuCondition) {
+        coreMenuCondition.setCoreUserId(null);
+        List<CoreMenu> coreMenus = coreMenuService.findTree(coreMenuCondition,"0");
         return HttpResult.ok(coreMenus);
     }
 

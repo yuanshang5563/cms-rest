@@ -57,6 +57,13 @@ public interface CoreRoleService {
 	public List<CoreRole>queryCoreRolesByExample(CoreRoleExample example) throws Exception;
 
 	/**
+	 * 查询全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreRole>queryAll() throws Exception;
+
+	/**
 	 * 根据指定条件分页
 	 * @param example
 	 * @param pageNum

@@ -56,6 +56,13 @@ public interface CoreDictionariesService {
 	public List<CoreDictionaries> queryCoreDictionariesByExample(CoreDictionariesExample example) throws Exception;
 
 	/**
+	 * 查询全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreDictionaries> queryAll() throws Exception;
+
+	/**
 	 * 根据指定条件分页
 	 * @param example
 	 * @param pageNum

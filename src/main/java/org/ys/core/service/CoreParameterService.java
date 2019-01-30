@@ -58,6 +58,13 @@ public interface CoreParameterService {
 	public List<CoreParameter>queryCoreParametersByExample(CoreParameterExample example) throws Exception;
 
 	/**
+	 *  查询全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreParameter>queryAll() throws Exception;
+
+	/**
 	 * 根据指定条件分页
 	 * @param example
 	 * @param pageNum

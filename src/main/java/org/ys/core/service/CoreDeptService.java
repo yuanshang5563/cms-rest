@@ -1,6 +1,7 @@
 package org.ys.core.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreDeptCondition;
 import org.ys.core.model.CoreDept;
 import org.ys.core.model.CoreDeptExample;
 
@@ -57,6 +58,13 @@ public interface CoreDeptService {
 	public List<CoreDept> queryCoreDeptsByExample(CoreDeptExample example) throws Exception;
 
 	/**
+	 * 查询全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreDept> queryAll() throws Exception;
+
+	/**
 	 * 根据指定条件分页
 	 * @param example
 	 * @param pageNum
@@ -83,9 +91,9 @@ public interface CoreDeptService {
 	public Set<CoreDept> queryAllSubCoreDeptsByDeptId(Long coreDeptId) throws Exception;
 
 	/**
-	 * 查询dept
-	 * @param deptName
+	 * 查询dept树
+	 * @param coreDeptCondition
 	 * @return
 	 */
-	public List<CoreDept> findTree(String deptName);
+	public List<CoreDept> findTree(CoreDeptCondition coreDeptCondition);
 }

@@ -6,6 +6,7 @@ public class CoreUserCondition extends BasecCondition {
     private String userName;
     private String realName;
     private String sex;
+    private Long coreDeptId;
 
     public String getUserName() {
         return userName;
@@ -29,5 +30,13 @@ public class CoreUserCondition extends BasecCondition {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public Long getCoreDeptId() {
+        return coreDeptId;
+    }
+
+    public void setCoreDeptId(Long coreDeptId) {
+        this.coreDeptId = coreDeptId;
     }
 }

@@ -24,6 +24,12 @@ public class CoreRoleServiceImpl implements CoreRoleService {
 	private CoreRoleMenuMapper coreRoleMenuMapper;
 
 	@Override
+	public List<CoreRole> queryAll() throws Exception {
+		CoreRoleExample example = new CoreRoleExample();
+		return coreRoleMapper.selectByExample(example);
+	}
+
+	@Override
 	public CoreRole queryCoreRoleById(Long coreRoleId) throws Exception {
 		if(null == coreRoleId) {
 			return null;

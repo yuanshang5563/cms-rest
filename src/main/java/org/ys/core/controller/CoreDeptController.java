@@ -1,26 +1,27 @@
 package org.ys.core.controller;
 
-import org.apache.commons.lang3.StringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
-import org.ys.common.page.PageBean;
 import org.ys.core.controller.vo.CoreDeptCondition;
 import org.ys.core.model.CoreDept;
-import org.ys.core.model.CoreDeptExample;
 import org.ys.core.service.CoreDeptService;
 
-import java.util.ArrayList;
-
+@Api("机构控制器")
 @RequestMapping("/sys/coreDept")
 @RestController
 public class CoreDeptController {
     @Autowired
     private CoreDeptService coreDeptService;
 
-    @GetMapping(value="/findTree")
-    public HttpResult findTree(@RequestParam(required = false) String deptName) {
-        return HttpResult.ok(coreDeptService.findTree(deptName));
+    @ApiOperation(value="查找机构树", notes="根据相关条件查找机构树")
+    @ApiImplicitParam(name = "coreDeptCondition", value = "机构查询实体", required = true, dataType = "CoreDeptCondition")
+    @PostMapping(value="/findTree")
+    public HttpResult findTree(@RequestBody CoreDeptCondition coreDeptCondition) {
+        return HttpResult.ok(coreDeptService.findTree(coreDeptCondition));
     }
 
     @GetMapping(value="/find")

@@ -1,6 +1,7 @@
 package org.ys.core.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreDictGroupCondition;
 import org.ys.core.model.CoreDictionariesGroup;
 import org.ys.core.model.CoreDictionariesGroupExample;
 
@@ -57,6 +58,13 @@ public interface CoreDictionariesGroupService {
 	public List<CoreDictionariesGroup> queryCoreDictionariesGroupsByExample(CoreDictionariesGroupExample example) throws Exception;
 
 	/**
+	 * 查询全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreDictionariesGroup> queryAll() throws Exception;
+
+	/**
 	 * 根据指定条件分页
 	 * @param example
 	 * @param pageNum
@@ -81,5 +89,12 @@ public interface CoreDictionariesGroupService {
 	 * @throws Exception
 	 */
 	public Set<CoreDictionariesGroup> queryAllSubCoreDictionariesGroupsByDictGroupId(Long coreDictGroupId) throws Exception;
+
+	/**
+	 * 查询数据字典组的树
+	 * @param coreDictGroupCondition
+	 * @return
+	 */
+	public List<CoreDictionariesGroup> findTree(CoreDictGroupCondition coreDictGroupCondition);
 	
 }

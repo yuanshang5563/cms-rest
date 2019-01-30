@@ -26,7 +26,7 @@ public class DruidConfiguration {
     private RedisTemplate redisTemplate ;
 
     /**
-               * 配置监控服务器
+     * 配置监控服务器
      *
      * @return 返回监控注册的servlet对象
      */
@@ -62,7 +62,7 @@ public class DruidConfiguration {
     }
 
     /**
-              * 配置服务过滤器
+     * 配置服务过滤器
      *
      * @return 返回过滤器配置对象
      */

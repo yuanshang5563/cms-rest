@@ -70,6 +70,12 @@ public class CoreDictionariesServiceImpl implements CoreDictionariesService {
 	}
 
 	@Override
+	public List<CoreDictionaries> queryAll() throws Exception {
+		CoreDictionariesExample example =  new CoreDictionariesExample();
+		return coreDictionariesMapper.selectByExample(example);
+	}
+
+	@Override
 	public PageBean<CoreDictionaries> pageCoreDictionariesByExample(CoreDictionariesExample example, int pageNum, int pageSize) throws Exception {
 		if(null == example) {
 			return null;

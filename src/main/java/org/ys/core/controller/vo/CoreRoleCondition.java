@@ -4,6 +4,7 @@ import org.ys.common.vo.BasecCondition;
 
 public class CoreRoleCondition extends BasecCondition {
     private String roleName;
+    private String role;
 
     public String getRoleName() {
         return roleName;
@@ -11,5 +12,13 @@ public class CoreRoleCondition extends BasecCondition {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

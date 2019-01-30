@@ -38,10 +38,14 @@ public class CoreRoleController {
         PageBean<CoreRole> pageBean = null;
         try {
             String roleName = coreRoleCondition.getRoleName();
+            String role = coreRoleCondition.getRole();
             CoreRoleExample example = new CoreRoleExample();
             CoreRoleExample.Criteria criteria = example.createCriteria();
             if(StringUtils.isNotEmpty(roleName)){
                 criteria.andRoleNameLike(roleName.trim()+"%");
+            }
+            if(StringUtils.isNotEmpty(role)){
+                criteria.andRoleLike(role.trim()+"%");
             }
             pageBean = coreRoleService.pageCoreRolesByExample(example, coreRoleCondition.getPageNum(), coreRoleCondition.getPageSize());
             if(null == pageBean) {

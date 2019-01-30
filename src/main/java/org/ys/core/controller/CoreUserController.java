@@ -16,6 +16,7 @@ import org.ys.core.service.CoreDeptService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/sys/coreUser")
@@ -37,6 +38,7 @@ public class CoreUserController {
             String userName = coreUserCondition.getUserName();
             String realName = coreUserCondition.getRealName();
             String sex = coreUserCondition.getSex();
+            Long coreDeptId = coreUserCondition.getCoreDeptId();
             CoreUserExample example = new CoreUserExample();
             CoreUserExample.Criteria criteria = example.createCriteria();
             if(StringUtils.isNotEmpty(userName)){
@@ -47,6 +49,16 @@ public class CoreUserController {
             }
             if(StringUtils.isNotEmpty(sex)){
                 criteria.andSexEqualTo(sex.trim());
+            }
+            if(null != coreDeptId){
+                Set<CoreDept> coreDepts = coreDeptService.queryAllSubCoreDeptsByDeptId(coreDeptId);
+                if(null != coreDepts && coreDepts.size() > 0){
+                    List<Long> deptIds = new ArrayList<>();
+                    for (CoreDept coreDept : coreDepts) {
+                        deptIds.add(coreDept.getCoreDeptId());
+                    }
+                    criteria.andCoreDeptIdIn(deptIds);
+                }
             }
             pageBean = coreUserService.pageCoreUsersByExample(example, coreUserCondition.getPageNum(), coreUserCondition.getPageSize());
             if(null == pageBean) {
@@ -113,6 +125,24 @@ public class CoreUserController {
                 }
             }
             return HttpResult.ok(coreUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+    }
+
+    @GetMapping("/resetPass")
+    public HttpResult saveOrEdit(@RequestParam Long coreUserId,@RequestParam String password){
+        if(null == coreUserId || coreUserId == 0 || StringUtils.isEmpty(password)){
+            return HttpResult.error("参数为空");
+        }
+        try {
+            CoreUser coreUser = coreUserService.queryCoreUserById(coreUserId);
+            if(null != coreUser){
+                coreUser.setPassword(password);
+                coreUserService.updateById(coreUser);
+            }
+            return HttpResult.ok("重置密码成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

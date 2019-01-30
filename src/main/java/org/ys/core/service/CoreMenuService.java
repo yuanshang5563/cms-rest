@@ -1,6 +1,7 @@
 package org.ys.core.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreMenuCondition;
 import org.ys.core.model.CoreMenu;
 import org.ys.core.model.CoreMenuExample;
 
@@ -57,6 +58,13 @@ public interface CoreMenuService {
 	public List<CoreMenu>queryCoreMenusByExample(CoreMenuExample example) throws Exception;
 
 	/**
+	 * 查找全部
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CoreMenu>queryAll() throws Exception;
+
+	/**
 	 * 查找子节点
 	 * @param parentId
 	 * @return
@@ -91,12 +99,11 @@ public interface CoreMenuService {
 
 	/**
 	 * 查询菜单树,用户ID和用户名为空则查询全部
-	 * @param coreUserId
+	 * @param coreMenuCondition
 	 * @param menuType 获取菜单类型，0：获取所有菜单，包含按钮，1：获取所有菜单，不包含按钮
-	 * @param menuName
 	 * @return
 	 */
-	public List<CoreMenu> findTree(Long coreUserId, String menuType,String menuName);
+	public List<CoreMenu> findTree(CoreMenuCondition coreMenuCondition, String menuType);
 
 	/**
 	 * 查找某个用户的菜单或权限集合

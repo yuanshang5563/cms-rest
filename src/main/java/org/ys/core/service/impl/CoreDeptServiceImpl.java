@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreDeptCondition;
 import org.ys.core.dao.CoreDeptMapper;
 import org.ys.core.model.CoreDept;
 import org.ys.core.model.CoreDeptExample;
@@ -115,25 +116,31 @@ public class CoreDeptServiceImpl implements CoreDeptService {
 		}
 		Set<CoreDept> allSubDepts = new HashSet<>();
 		//一次找出所有节点然后处理
-		CoreDeptExample example = new CoreDeptExample();
-		List<CoreDept> allDepts = coreDeptMapper.selectByExample(example);
+		List<CoreDept> allDepts = queryAll();
 		return queryAllSubCoreDeptsByDeptId(coreDeptId,allSubDepts,allDepts);
 	}
 
 	@Override
-	public List<CoreDept> findTree(String deptName){
+	public List<CoreDept> queryAll() throws Exception {
+		CoreDeptExample example = new CoreDeptExample();
+		return coreDeptMapper.selectByExample(example);
+	}
+
+	@Override
+	public List<CoreDept> findTree(CoreDeptCondition coreDeptCondition){
 		List<CoreDept> deptList = new ArrayList<>();
 		CoreDeptExample example = new CoreDeptExample();
 		Criteria criteria = example.createCriteria();
+		String deptName = coreDeptCondition.getDeptName();
 		if(StringUtils.isNotEmpty(deptName)){
 			criteria.andDeptNameLike("%"+deptName.trim()+"%");
 		}
 		List<CoreDept> allDepts = coreDeptMapper.selectByExample(example);
 		for (CoreDept dept : allDepts) {
-			if(dept.getParentCoreDeptId() == null){
-				continue;
-			}
-			if (dept.getParentCoreDeptId() == 0) {
+//			if(dept.getParentCoreDeptId() == null){
+//				continue;
+//			}
+			if (dept.getParentCoreDeptId() == null) {
 				dept.setLevel(0);
 				deptList.add(dept);
 			}

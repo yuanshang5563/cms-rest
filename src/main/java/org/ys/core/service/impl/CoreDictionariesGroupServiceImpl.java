@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
+import org.ys.core.controller.vo.CoreDictGroupCondition;
 import org.ys.core.dao.CoreDictionariesGroupMapper;
 import org.ys.core.model.CoreDictionariesGroup;
 import org.ys.core.model.CoreDictionariesGroupExample;
@@ -89,7 +91,7 @@ public class CoreDictionariesGroupServiceImpl implements CoreDictionariesGroupSe
 		return coreDictionariesGroupMapper.selectByExample(example);
 	}
 	
-	private Set<CoreDictionariesGroup> queryAllSubCoreDeptsByDeptId(Long coreDictGroupId,Set<CoreDictionariesGroup> allSubGroups,
+	private Set<CoreDictionariesGroup> queryAllSubCoreDictGroupsByDictGroupId(Long coreDictGroupId,Set<CoreDictionariesGroup> allSubGroups,
 	List<CoreDictionariesGroup> allGroups) throws Exception  {
         for(CoreDictionariesGroup group : allGroups){
         	if(group.getCoreDictGroupId() == coreDictGroupId) {
@@ -98,7 +100,7 @@ public class CoreDictionariesGroupServiceImpl implements CoreDictionariesGroupSe
             //遍历出父id等于参数的id，add进子节点集合
             if(group.getParentCoreDictGroupId()==coreDictGroupId){
                 //递归遍历下一级
-            	queryAllSubCoreDeptsByDeptId(group.getCoreDictGroupId(),allSubGroups,allGroups);
+				queryAllSubCoreDictGroupsByDictGroupId(group.getCoreDictGroupId(),allSubGroups,allGroups);
             	allSubGroups.add(group);
             }
         }
@@ -112,8 +114,52 @@ public class CoreDictionariesGroupServiceImpl implements CoreDictionariesGroupSe
 		}
 		Set<CoreDictionariesGroup> allSubGroups = new HashSet<>();
 		//一次找出所有节点然后处理
+		List<CoreDictionariesGroup> allGroups = queryAll();
+		return queryAllSubCoreDictGroupsByDictGroupId(coreDictGroupId,allSubGroups,allGroups);
+	}
+
+	@Override
+	public List<CoreDictionariesGroup> queryAll() throws Exception {
 		CoreDictionariesGroupExample example = new CoreDictionariesGroupExample();
-		List<CoreDictionariesGroup> allGroups = coreDictionariesGroupMapper.selectByExample(example);
-		return queryAllSubCoreDeptsByDeptId(coreDictGroupId,allSubGroups,allGroups);
+		return coreDictionariesGroupMapper.selectByExample(example);
+	}
+
+	@Override
+	public List<CoreDictionariesGroup> findTree(CoreDictGroupCondition coreDictGroupCondition){
+		List<CoreDictionariesGroup> groupList = new ArrayList<>();
+		CoreDictionariesGroupExample example = new CoreDictionariesGroupExample();
+		Criteria criteria = example.createCriteria();
+		String dictGroupName = coreDictGroupCondition.getDictGroupName();
+		String dictGroupCode = coreDictGroupCondition.getDictGroupCode();
+		if(StringUtils.isNotEmpty(dictGroupName)){
+			criteria.andDictGroupNameLike("%"+dictGroupName.trim()+"%");
+		}
+		if(StringUtils.isNotEmpty(dictGroupCode)){
+			criteria.andDictGroupCodeEqualTo(dictGroupCode.trim());
+		}
+		List<CoreDictionariesGroup> allDictGroups = coreDictionariesGroupMapper.selectByExample(example);
+		for (CoreDictionariesGroup dictGroup : allDictGroups) {
+			if (dictGroup.getParentCoreDictGroupId() == null) {
+				dictGroup.setLevel(0);
+				groupList.add(dictGroup);
+			}
+		}
+		findChildren(groupList, allDictGroups);
+		return groupList;
+	}
+
+	private void findChildren(List<CoreDictionariesGroup> groupList, List<CoreDictionariesGroup> allDictGroups) {
+		for (CoreDictionariesGroup group : groupList) {
+			List<CoreDictionariesGroup> children = new ArrayList<>();
+			for (CoreDictionariesGroup dictGroup : allDictGroups) {
+				if (group.getCoreDictGroupId() != null && group.getCoreDictGroupId().equals(dictGroup.getParentCoreDictGroupId())) {
+					dictGroup.setParentDictGroupNameName(group.getDictGroupName());
+					dictGroup.setLevel(group.getLevel() + 1);
+					children.add(dictGroup);
+				}
+			}
+			group.setChildren(children);
+			findChildren(children, allDictGroups);
+		}
 	}
 }

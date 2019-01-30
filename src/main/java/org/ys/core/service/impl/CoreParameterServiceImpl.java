@@ -77,6 +77,12 @@ public class CoreParameterServiceImpl implements CoreParameterService {
 	}
 
 	@Override
+	public List<CoreParameter> queryAll() throws Exception {
+		CoreParameterExample example = new CoreParameterExample();
+		return coreParameterMapper.selectByExample(example);
+	}
+
+	@Override
 	public PageBean<CoreParameter> pageCoreParametersByExample(CoreParameterExample example, int pageNum, int pageSize) throws Exception {
 		if(null == example) {
 			return null;
