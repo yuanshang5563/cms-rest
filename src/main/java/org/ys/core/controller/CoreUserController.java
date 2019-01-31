@@ -2,19 +2,21 @@ package org.ys.core.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.ys.common.constant.CoreMenuContant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
+import org.ys.common.util.PasswordUtils;
 import org.ys.core.controller.vo.CoreUserCondition;
-import org.ys.core.model.CoreDept;
-import org.ys.core.model.CoreUser;
-import org.ys.core.model.CoreUserExample;
-import org.ys.core.model.CoreUserRole;
+import org.ys.core.model.*;
+import org.ys.core.service.CoreMenuService;
 import org.ys.core.service.CoreUserRoleService;
 import org.ys.core.service.CoreUserService;
 import org.ys.core.service.CoreDeptService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +29,10 @@ public class CoreUserController {
     private CoreDeptService coreDeptService;
     @Autowired
     private CoreUserRoleService coreUserRoleService;
+    @Autowired
+    private CoreMenuService coreMenuService;
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_USER_LIST')")
     @PostMapping("/findPage")
     public HttpResult findPage(@RequestBody CoreUserCondition coreUserCondition){
         if(null == coreUserCondition){
@@ -71,6 +76,7 @@ public class CoreUserController {
         return HttpResult.ok(pageBean);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_USER_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreUser coreUser){
         if(null == coreUser){
@@ -82,7 +88,7 @@ public class CoreUserController {
             List<CoreUser> coreUsers = coreUserService.queryCoreUsersByExample(example);
             if(null != coreUsers && coreUsers.size() > 0){
                 if(!(coreUsers.size() == 1 && coreUser.getCoreUserId() != null && coreUser.getCoreUserId() != 0l)){
-                    return HttpResult.error("角色已经存在！");
+                    return HttpResult.error("用户名已经存在！");
                 }
             }
             coreUserService.updateCoreUserAndRoles(coreUser);
@@ -93,6 +99,7 @@ public class CoreUserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_USER_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreUserId){
         if(null == coreUserId || coreUserId == 0){
@@ -107,6 +114,7 @@ public class CoreUserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_USER_EDIT_VIEW')")
     @GetMapping("/find")
     public HttpResult find(@RequestParam Long coreUserId){
         if(null == coreUserId || coreUserId == 0){
@@ -131,15 +139,16 @@ public class CoreUserController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_USER_RESET')")
     @GetMapping("/resetPass")
-    public HttpResult saveOrEdit(@RequestParam Long coreUserId,@RequestParam String password){
+    public HttpResult resetPass(@RequestParam Long coreUserId,@RequestParam String password){
         if(null == coreUserId || coreUserId == 0 || StringUtils.isEmpty(password)){
             return HttpResult.error("参数为空");
         }
         try {
             CoreUser coreUser = coreUserService.queryCoreUserById(coreUserId);
             if(null != coreUser){
-                coreUser.setPassword(password);
+                coreUser.setPassword(PasswordUtils.encode(password));
                 coreUserService.updateById(coreUser);
             }
             return HttpResult.ok("重置密码成功！");
@@ -147,5 +156,30 @@ public class CoreUserController {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");
         }
+    }
+
+    @GetMapping(value="/findPermissions")
+    public HttpResult findPermissions(@RequestParam String userName) {
+        Set<String> permiss = new HashSet<>();
+        if(StringUtils.isEmpty(userName)){
+            return HttpResult.ok(permiss);
+        }
+        try {
+            CoreUser coreUser = coreUserService.queryCoreUserByUserName(userName);
+            if(null != coreUser){
+                List<CoreMenu> coreMenus = coreMenuService.listCoreMenusByUserId(coreUser.getCoreUserId());
+                if(null != coreMenus && coreMenus.size() > 0){
+                    for (CoreMenu coreMenu : coreMenus) {
+                        if(StringUtils.equals(CoreMenuContant.MENU_TYPE_PERMISSION,coreMenu.getMenuType())){
+                            permiss.add(coreMenu.getPermission());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+        return HttpResult.ok(permiss);
     }
 }

@@ -21,6 +21,14 @@ public interface CoreUserService {
 	public CoreUser queryCoreUserById(Long coreUserId) throws Exception;
 
 	/**
+	 * 根据用户名查询
+	 * @param userName
+	 * @return
+	 * @throws Exception
+	 */
+	public CoreUser queryCoreUserByUserName(String userName) throws Exception;
+
+	/**
 	 * 保存
 	 * @param coreUser
 	 * @return

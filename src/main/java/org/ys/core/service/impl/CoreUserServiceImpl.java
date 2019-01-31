@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.ys.common.constant.DictionariesGroupContant;
 import org.ys.common.constant.RedisKeyContant;
 import org.ys.common.page.PageBean;
+import org.ys.common.util.PasswordUtils;
 import org.ys.core.dao.CoreUserMapper;
 import org.ys.core.dao.CoreUserRoleMapper;
 import org.ys.core.model.CoreDictionaries;
@@ -43,6 +44,21 @@ public class CoreUserServiceImpl implements CoreUserService {
 			return null;
 		}
 		return coreUserMapper.selectByPrimaryKey(coreUserId);
+	}
+
+	@Override
+	public CoreUser queryCoreUserByUserName(String userName) throws Exception {
+		if(StringUtils.isEmpty(userName)){
+			return  null;
+		}
+		CoreUserExample example = new CoreUserExample();
+		example.createCriteria().andUserNameEqualTo(userName.trim());
+		List<CoreUser> coreUsers = coreUserMapper.selectByExample(example);
+		if(null != coreUsers && coreUsers.size() > 0){
+			return coreUsers.get(0);
+		}else {
+			return null;
+		}
 	}
 
 	@Override
@@ -98,6 +114,9 @@ public class CoreUserServiceImpl implements CoreUserService {
 	@Override
 	public void updateCoreUserAndRoles(CoreUser coreUser) throws Exception {
 		if(null != coreUser) {
+			if(StringUtils.isNotEmpty(coreUser.getPassword())){
+				coreUser.setPassword(PasswordUtils.encode(coreUser.getPassword()));
+			}
 			if(null == coreUser.getCoreUserId() || coreUser.getCoreUserId() == 0l) {
                 coreUser.setCreatedTime(new Date());
 				coreUserMapper.insert(coreUser);

@@ -1,6 +1,7 @@
 package org.ys.core.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
 import org.ys.core.controller.vo.CoreDictGroupCondition;
@@ -21,6 +22,7 @@ public class CoreDictionariesGroupController {
         return HttpResult.ok(coreDictionariesGroupService.findTree(coreDictGroupCondition));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICTGROUP_EDIT_VIEW')")
     @GetMapping(value="/find")
     public HttpResult find(@RequestParam Long coreDictGroupId) {
         if(null == coreDictGroupId || coreDictGroupId == 0l){
@@ -40,7 +42,7 @@ public class CoreDictionariesGroupController {
             return HttpResult.error("程序出现异常");
         }
     }
-
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICTGROUP_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreDictionariesGroup coreDictionariesGroup){
         if(null == coreDictionariesGroup){
@@ -67,6 +69,7 @@ public class CoreDictionariesGroupController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICTGROUP_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreDictGroupId){
         if(null == coreDictGroupId || coreDictGroupId == 0){

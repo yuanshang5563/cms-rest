@@ -17,7 +17,7 @@ public class CoreMenuContant {
 	public static final String MENU_TYPE_MENU = "1";
 
 	/**
-	 *	菜单类型-按钮
+	 *	菜单类型-权限
 	 */
-	public static final String MENU_TYPE_BUTTON = "2";
+	public static final String MENU_TYPE_PERMISSION = "2";
 }

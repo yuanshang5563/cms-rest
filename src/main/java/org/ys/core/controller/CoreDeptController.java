@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
 import org.ys.core.controller.vo.CoreDeptCondition;
@@ -24,6 +25,7 @@ public class CoreDeptController {
         return HttpResult.ok(coreDeptService.findTree(coreDeptCondition));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DEPT_EDIT_VIEW')")
     @GetMapping(value="/find")
     public HttpResult find(@RequestParam Long coreDeptId) {
         if(null == coreDeptId || coreDeptId == 0l){
@@ -44,6 +46,7 @@ public class CoreDeptController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DEPT_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreDept coreDept){
         if(null == coreDept){
@@ -62,6 +65,7 @@ public class CoreDeptController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DEPT_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreDeptId){
         if(null == coreDeptId || coreDeptId == 0){

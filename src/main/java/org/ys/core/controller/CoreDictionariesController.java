@@ -2,6 +2,7 @@ package org.ys.core.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
@@ -24,7 +25,7 @@ public class CoreDictionariesController {
     @Autowired
     private CoreDictionariesGroupService coreDictionariesGroupService;
 
-
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICT_LIST')")
     @PostMapping("/findPage")
     public HttpResult findPage(@RequestBody CoreDictCondition coreDictCondition){
         if(null == coreDictCondition){
@@ -64,6 +65,7 @@ public class CoreDictionariesController {
         return HttpResult.ok(pageBean);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICT_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreDictionaries coreDictionaries){
         if(null == coreDictionaries || StringUtils.isEmpty(coreDictionaries.getDictCode())){
@@ -90,6 +92,7 @@ public class CoreDictionariesController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICT_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreDictId){
         if(null == coreDictId || coreDictId == 0){
@@ -104,6 +107,7 @@ public class CoreDictionariesController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_DICT_EDIT_VIEW')")
     @GetMapping("/find")
     public HttpResult find(@RequestParam Long coreDictId){
         if(null == coreDictId || coreDictId == 0){

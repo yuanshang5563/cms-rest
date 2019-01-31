@@ -2,6 +2,7 @@ package org.ys.core.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
@@ -20,7 +21,7 @@ public class CoreParameterController {
     @Autowired
     private CoreParameterService coreParameterService;
 
-
+    @PreAuthorize("hasAuthority('ROLE_CORE_PARAM_LIST')")
     @PostMapping("/findPage")
     public HttpResult findPage(@RequestBody CoreParameterCondition coreParameterCondition){
         if(null == coreParameterCondition){
@@ -53,6 +54,7 @@ public class CoreParameterController {
         return HttpResult.ok(pageBean);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_PARAM_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreParameter coreParameter){
         if(null == coreParameter || StringUtils.isEmpty(coreParameter.getParamCode())){
@@ -82,6 +84,7 @@ public class CoreParameterController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_PARAM_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreParamId){
         if(null == coreParamId || coreParamId == 0){
@@ -96,6 +99,7 @@ public class CoreParameterController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_PARAM_EDIT_VIEW')")
     @GetMapping("/find")
     public HttpResult find(@RequestParam Long coreParamId){
         if(null == coreParamId || coreParamId == 0){

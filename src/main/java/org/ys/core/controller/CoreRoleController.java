@@ -2,6 +2,7 @@ package org.ys.core.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
@@ -30,6 +31,7 @@ public class CoreRoleController {
     @Autowired
     private CoreMenuService coreMenuService;
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_ROLE_LIST')")
     @PostMapping("/findPage")
     public HttpResult findPage(@RequestBody CoreRoleCondition coreRoleCondition){
         if(null == coreRoleCondition){
@@ -58,6 +60,7 @@ public class CoreRoleController {
         return HttpResult.ok(pageBean);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_ROLE_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreRole coreRole){
         if(null == coreRole || StringUtils.isEmpty(coreRole.getRole())){
@@ -87,6 +90,7 @@ public class CoreRoleController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_ROLE_MENU_SAVE')")
     @PostMapping("/saveRoleMenus")
     public HttpResult saveRoleMenus(@RequestBody List<CoreRoleMenu> coreRoleMenuList){
         if(null == coreRoleMenuList || coreRoleMenuList.isEmpty()){
@@ -101,6 +105,7 @@ public class CoreRoleController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_ROLE_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreRoleId){
         if(null == coreRoleId || coreRoleId == 0){
@@ -115,6 +120,7 @@ public class CoreRoleController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_ROLE_EDIT_VIEW')")
     @GetMapping("/find")
     public HttpResult find(@RequestParam Long coreRoleId){
         if(null == coreRoleId || coreRoleId == 0){

@@ -4,6 +4,7 @@ import org.ys.common.vo.BasecCondition;
 
 public class CoreMenuCondition extends BasecCondition {
     private Long coreUserId;
+    private String userName;
     private String menuName;
 
     public Long getCoreUserId() {
@@ -12,6 +13,14 @@ public class CoreMenuCondition extends BasecCondition {
 
     public void setCoreUserId(Long coreUserId) {
         this.coreUserId = coreUserId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getMenuName() {

@@ -1,28 +1,50 @@
 package org.ys.core.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.ys.common.http.HttpResult;
 import org.ys.core.controller.vo.CoreMenuCondition;
-import org.ys.core.model.CoreMenu;
-import org.ys.core.model.CoreMenuExample;
+import org.ys.core.model.*;
 import org.ys.core.service.CoreMenuService;
+import org.ys.core.service.CoreRoleMenuService;
+import org.ys.core.service.CoreRoleService;
+import org.ys.core.service.CoreUserService;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/sys/coreMenu")
 public class CoreMenuController {
     @Autowired
     private CoreMenuService coreMenuService;
+    @Autowired
+    private CoreUserService coreUserService;
+    @Autowired
+    private CoreRoleService coreRoleService;
+    @Autowired
+    private CoreRoleMenuService coreRoleMenuService;
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @PostMapping(value="/findNavTree")
     public HttpResult findNavTree(@RequestBody CoreMenuCondition coreMenuCondition) {
-        Long coreUserId = coreMenuCondition.getCoreUserId();
+        String userName = coreMenuCondition.getUserName();
+        Long coreUserId = null;
+        CoreUser coreUser = null;
+        try {
+            coreUser = coreUserService.queryCoreUserByUserName(userName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(null != coreUser){
+            coreUserId = coreUser.getCoreUserId();
+        }
         if(null == coreUserId || coreUserId == 0){
             return HttpResult.error("用户id为空！");
         }
-        coreMenuCondition.setCoreUserId(11l);
+        coreMenuCondition.setCoreUserId(coreUserId);
         coreMenuCondition.setMenuName(null);
         List<CoreMenu> coreMenus = coreMenuService.findTree( coreMenuCondition,"1");
         return HttpResult.ok(coreMenus);
@@ -35,6 +57,7 @@ public class CoreMenuController {
         return HttpResult.ok(coreMenus);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_MENU_ADD_EDIT')")
     @PostMapping("/saveOrEdit")
     public HttpResult saveOrEdit(@RequestBody CoreMenu coreMenu){
         if(null == coreMenu){
@@ -53,6 +76,7 @@ public class CoreMenuController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_MENU_DEL')")
     @DeleteMapping("/delete")
     public HttpResult delete(@RequestParam Long coreMenuId){
         if(null == coreMenuId || coreMenuId == 0){
@@ -67,6 +91,7 @@ public class CoreMenuController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CORE_MENU_EDIT_VIEW')")
     @GetMapping(value="/find")
     public HttpResult find(@RequestParam Long coreMenuId) {
         if(null == coreMenuId || coreMenuId == 0){

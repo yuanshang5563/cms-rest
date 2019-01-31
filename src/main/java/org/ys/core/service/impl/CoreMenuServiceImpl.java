@@ -169,7 +169,7 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 		for (CoreMenu coreMenu : coreMenus) {
 			List<CoreMenu> children = new ArrayList<>();
 			for (CoreMenu menu : menus) {
-				if(menuType == CoreMenuContant.MENU_TYPE_MENU && menu.getMenuType() == CoreMenuContant.MENU_TYPE_BUTTON) {
+				if(StringUtils.equals(menuType,CoreMenuContant.MENU_TYPE_MENU) && StringUtils.equals(CoreMenuContant.MENU_TYPE_PERMISSION,menu.getMenuType())) {
 					// 如果是获取类型不需要按钮，且菜单类型是按钮的，直接过滤掉
 					continue ;
 				}
