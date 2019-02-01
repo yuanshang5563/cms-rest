@@ -81,15 +81,12 @@ public class LoginController {
         if (coreUser == null) {
             return HttpResult.error("账号不存在");
         }
-        String str = PasswordUtils.encode("123456");
-        System.out.println(str);
-        System.out.println(PasswordUtils.matches(password, coreUser.getPassword()));
         if (!PasswordUtils.matches(password, coreUser.getPassword())) {
             return HttpResult.error("密码不正确");
         }
 
         // 账号锁定
-        if (coreUser.getStatus() == "1") {
+        if (coreUser.getStatus() == "coreUserStatus.1") {
             return HttpResult.error("账号已被锁定,请联系管理员");
         }
 

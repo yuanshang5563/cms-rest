@@ -13,9 +13,7 @@ import org.ys.core.model.CoreDictionariesGroup;
 import org.ys.core.service.CoreDictionariesGroupService;
 import org.ys.core.service.CoreDictionariesService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/sys/coreDictionaries")
@@ -126,5 +124,42 @@ public class CoreDictionariesController {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");
         }
+    }
+
+    /**
+     * 查找出所有字典组和字典码组成map
+     * @return
+     */
+    @GetMapping("/findAllDictInGroup")
+    public HttpResult findAllDictInGroup(){
+        Map<String,List<CoreDictionaries>> result = new HashMap<>();
+        try {
+            //先找出所有
+            List<CoreDictionariesGroup> groupList = coreDictionariesGroupService.queryAll();
+            if(null != groupList && groupList.size() > 0){
+                List<CoreDictionaries> coreDictionaries = coreDictionariesService.queryAll();
+                if(null != coreDictionaries && coreDictionaries.size() > 0){
+                    for (CoreDictionariesGroup group : groupList) {
+                        String groupCode = group.getDictGroupCode();
+                        if(StringUtils.isNotEmpty(groupCode)){
+                            for (CoreDictionaries coreDictionary : coreDictionaries) {
+                                if(coreDictionary.getCoreDictGroupId() == group.getCoreDictGroupId()){
+                                    List<CoreDictionaries> dictList = result.get(groupCode);
+                                    if(null == dictList){
+                                        dictList = new ArrayList<>();
+                                    }
+                                    dictList.add(coreDictionary);
+                                    result.put(groupCode,dictList);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+        return HttpResult.ok(result);
     }
 }
