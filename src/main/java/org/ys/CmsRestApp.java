@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@MapperScan({"org.ys.core.dao"})
+@MapperScan({"org.ys.core.dao","org.ys.crawler.dao"})
 public class CmsRestApp {
     public static void main( String[] args ){
         SpringApplication.run(CmsRestApp.class,args);
