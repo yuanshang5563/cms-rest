@@ -8,14 +8,20 @@ import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballPlayerMapper;
 import org.ys.crawler.model.FootballPlayer;
 import org.ys.crawler.model.FootballPlayerExample;
+import org.ys.crawler.model.FootballTeam;
 import org.ys.crawler.service.FootballPlayerService;
+import org.ys.crawler.service.FootballTeamService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("footballPlayerService")
 public class FootballPlayerServiceImpl implements FootballPlayerService {
     @Autowired
     private FootballPlayerMapper footballPlayerMapper;
+    @Autowired
+    private FootballTeamService footballTeamService;
 
     @Override
     public FootballPlayer queryFootballPlayerById(String footballPlayerId) throws Exception {
@@ -78,6 +84,18 @@ public class FootballPlayerServiceImpl implements FootballPlayerService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballPlayer> footballPlayers = footballPlayerMapper.selectByExample(example);
+        if(null != footballPlayers && footballPlayers.size() > 0){
+            Map<String, FootballTeam> footballTeamMap = new HashMap<String,FootballTeam>();
+            for (FootballPlayer footballPlayer : footballPlayers) {
+                String teamId = footballPlayer.getFootballTeamId();
+                FootballTeam footballTeam = footballTeamMap.get(teamId);
+                if(null == footballTeam){
+                    footballTeam = footballTeamService.queryFootballTeamById(teamId);
+                    footballTeamMap.put(teamId,footballTeam);
+                }
+                footballPlayer.setTeamName(footballTeam.getTeamName());
+            }
+        }
         return new PageBean<FootballPlayer>(footballPlayers);
     }
 

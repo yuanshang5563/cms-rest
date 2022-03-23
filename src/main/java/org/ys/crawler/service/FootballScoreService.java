@@ -7,6 +7,7 @@ import org.ys.crawler.model.FootballScore;
 import org.ys.crawler.model.FootballScoreExample;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FootballScoreService {
     /**
@@ -86,4 +87,29 @@ public interface FootballScoreService {
      * @throws Exception
      */
     public List<FootballScore> queryFootballScoresBySeasonId(String footballSeasonId) throws Exception;
+
+    /**
+     * 根据联赛Id查询比分记录
+     * @param footballLeagueMatchId
+     * @return
+     * @throws Exception
+     */
+    public List<FootballScore> queryFootballScoresByLeagueMatchId(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 根据联赛赛季类别Id查询比分记录
+     * @param footballSeasonCategoryId
+     * @return
+     * @throws Exception
+     */
+    public List<FootballScore> queryFootballScoresBySeasonCategoryId(String footballSeasonCategoryId) throws Exception;
+
+    /**
+     * 判断赛季类别是否已经存在比分数据
+     * @param categoryIds 减少重复查询的set
+     * @param footballSeasonCategoryId
+     * @return
+     * @throws Exception
+     */
+    public boolean isExistsScoreByCategoryId(Set<String> categoryIds, String footballSeasonCategoryId) throws Exception;
 }

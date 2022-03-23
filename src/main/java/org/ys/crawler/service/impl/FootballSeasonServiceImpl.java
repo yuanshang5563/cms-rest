@@ -6,16 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballSeasonMapper;
+import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballSeason;
 import org.ys.crawler.model.FootballSeasonExample;
+import org.ys.crawler.service.FootballLeagueMatchService;
 import org.ys.crawler.service.FootballSeasonService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("footballSeasonService")
 public class FootballSeasonServiceImpl implements FootballSeasonService {
     @Autowired
     private FootballSeasonMapper footballSeasonMapper;
+    @Autowired
+    private FootballLeagueMatchService footballLeagueMatchService;
 
     @Override
     public FootballSeason queryFootballSeasonById(String footballSeasonId) throws Exception {
@@ -78,6 +84,19 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballSeason> footballSeasons = footballSeasonMapper.selectByExample(example);
+        if(null != footballSeasons && footballSeasons.size() > 0){
+            Map<String,FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
+            for (FootballSeason footballSeason : footballSeasons) {
+                FootballLeagueMatch leagueMatch = leagueMatchMap.get(footballSeason.getFootballLeagueMatchId());
+                if(null == leagueMatch){
+                    leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballSeason.getFootballLeagueMatchId());
+                    if(null != leagueMatch){
+                        leagueMatchMap.put(footballSeason.getFootballLeagueMatchId(),leagueMatch);
+                    }
+                }
+                footballSeason.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+            }
+        }
         return new PageBean<FootballSeason>(footballSeasons);
     }
 

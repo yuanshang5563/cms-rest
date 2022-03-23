@@ -85,4 +85,12 @@ public interface FootballSeasonCategoryService {
      * @throws Exception
      */
     public List<FootballSeasonCategory> queryFootballSeasonCategoryByLeagueMatchId(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 根据赛季Id查询该赛季下属的赛季类别
+     * @param footballSeasonId
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeasonCategory> queryFootballSeasonCategoryBySeasonId(String footballSeasonId) throws Exception;
 }

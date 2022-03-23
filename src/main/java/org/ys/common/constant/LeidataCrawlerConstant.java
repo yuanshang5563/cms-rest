@@ -62,4 +62,24 @@ public class LeidataCrawlerConstant {
      * 雷达体育赛季比赛详情url的中间词
      */
     public static final String LEIDATA_CRAWLER_SEASON_SCORE_DETAIL_STATS_MIDDLE_WORD = "stats";
+
+    /**
+     * 雷达体育赛季类别总爬虫别称
+     */
+    public static final String LEIDATA_CRAWLER_SEASON_CATEGORY_CRAW_TYPE = "cateCraw";
+
+    /**
+     * 雷达体育赛季轮数总爬虫别称
+     */
+    public static final String LEIDATA_CRAWLER_SEASON_ROUND_TYPE = "roundCraw";
+
+    /**
+     * 雷达体育赛季比分总爬虫别称
+     */
+    public static final String LEIDATA_CRAWLER_SCORE_TYPE = "scoreCraw";
+
+    /**
+     * 雷达体育赛季比分详情总爬虫别称
+     */
+    public static final String LEIDATA_CRAWLER_SCORE_DETAIL_TYPE = "scoreDetailCraw";
 }

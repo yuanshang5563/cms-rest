@@ -11,6 +11,7 @@ import org.ys.crawler.model.FootballScoreExample;
 import org.ys.crawler.service.FootballScoreService;
 
 import java.util.List;
+import java.util.Set;
 
 @Service("footballScoreService")
 public class FootballScoreServiceImpl implements FootballScoreService {
@@ -105,5 +106,43 @@ public class FootballScoreServiceImpl implements FootballScoreService {
         example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
         List<FootballScore> footballScores = footballScoreMapper.selectByExample(example);
         return footballScores;
+    }
+
+    @Override
+    public List<FootballScore> queryFootballScoresByLeagueMatchId(String footballLeagueMatchId) throws Exception {
+        if(StringUtils.isEmpty(footballLeagueMatchId)){
+            return null;
+        }
+        FootballScoreExample example = new FootballScoreExample();
+        example.createCriteria().andFootballLeagueMatchIdEqualTo(StringUtils.trim(footballLeagueMatchId));
+        return footballScoreMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<FootballScore> queryFootballScoresBySeasonCategoryId(String footballSeasonCategoryId) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonCategoryId)){
+            return null;
+        }
+        FootballScoreExample example = new FootballScoreExample();
+        example.createCriteria().andFootballSeasonCategoryIdEqualTo(StringUtils.trim(footballSeasonCategoryId));
+        return footballScoreMapper.selectByExample(example);
+    }
+
+    @Override
+    public boolean isExistsScoreByCategoryId(Set<String> categoryIds, String footballSeasonCategoryId) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonCategoryId) || null == categoryIds){
+            return false;
+        }
+        boolean containsFlag = categoryIds.contains(footballSeasonCategoryId);
+        if(containsFlag){
+            return true;
+        }else{
+            List<FootballScore> scores = queryFootballScoresBySeasonCategoryId(footballSeasonCategoryId);
+            if(null != scores && scores.size() > 0){
+                categoryIds.add(footballSeasonCategoryId);
+                return true;
+            }
+        }
+        return false;
     }
 }

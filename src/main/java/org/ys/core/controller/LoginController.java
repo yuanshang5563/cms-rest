@@ -2,6 +2,7 @@ package org.ys.core.controller;
 
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,12 +63,12 @@ public class LoginController {
 
         // 从session中获取之前保存的验证码跟前台传来的验证码进行匹配
         Object kaptcha = request.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
-//        if(kaptcha == null){
-//            return HttpResult.error("验证码已失效");
-//        }
-//		if(!captcha.equals(kaptcha)){
-//			return HttpResult.error("验证码不正确");
-//		}
+        if(kaptcha == null){
+            return HttpResult.error("验证码已失效");
+        }
+		if(!captcha.equals(kaptcha)){
+			return HttpResult.error("验证码不正确");
+		}
 
         // 用户信息
         CoreUser coreUser = null;
@@ -86,7 +87,7 @@ public class LoginController {
         }
 
         // 账号锁定
-        if (coreUser.getStatus() == "coreUserStatus.1") {
+        if (StringUtils.equals(coreUser.getStatus(),"coreUserStatus.1")) {
             return HttpResult.error("账号已被锁定,请联系管理员");
         }
 

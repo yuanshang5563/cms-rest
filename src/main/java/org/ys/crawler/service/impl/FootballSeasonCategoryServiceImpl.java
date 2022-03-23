@@ -119,4 +119,14 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         List<FootballSeasonCategory> footballSeasonCategories = footballSeasonCategoryMapper.selectByExample(example);
         return footballSeasonCategories;
     }
+
+    @Override
+    public List<FootballSeasonCategory> queryFootballSeasonCategoryBySeasonId(String footballSeasonId) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonId)){
+            return null;
+        }
+        FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
+        example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
+        return footballSeasonCategoryMapper.selectByExample(example);
+    }
 }

@@ -91,12 +91,18 @@ public class FootballScorePageProcessor implements PageProcessor {
                                 }
                             }
                         }
+                        JsonNode regionNameNode = node.path("RegionName");
+                        String regionName = null;
+                        //没有id直接跳过
+                        if(null != regionNameNode){
+                            regionName = regionNameNode.asText();
+                        }
                         //如果球队不存在，创建球队
                         JsonNode homeTeamNode = node.path("HomeTeam");
                         if(null != homeTeamNode && null != homeTeamNode.get(0) && null != homeTeamNode.get(0).path("name")){
                             String homeTeamName = StringUtils.trim(homeTeamNode.get(0).path("name").asText());
                             if(StringUtils.isNotEmpty(homeTeamName)){
-                                FootballTeam homeTeam = getFootballTeam(teamMap,homeTeamName);
+                                FootballTeam homeTeam = getFootballTeam(teamMap,homeTeamName,regionName);
                                 footballScore.setHomeFootballTeamId(homeTeam.getFootballTeamId());
                             }
                         }
@@ -104,7 +110,7 @@ public class FootballScorePageProcessor implements PageProcessor {
                         if(null != awayTeamNode && null != awayTeamNode.get(0) && null != awayTeamNode.get(0).path("name")){
                             String awayTeamName = StringUtils.trim(awayTeamNode.get(0).path("name").asText());
                             if(StringUtils.isNotEmpty(awayTeamName)){
-                                FootballTeam awayTeam = getFootballTeam(teamMap,awayTeamName);
+                                FootballTeam awayTeam = getFootballTeam(teamMap,awayTeamName,regionName);
                                 footballScore.setAwayFootballTeamId(awayTeam.getFootballTeamId());
                             }
                         }
@@ -126,7 +132,7 @@ public class FootballScorePageProcessor implements PageProcessor {
         return SiteUtils.generateSite();
     }
 
-    private FootballTeam getFootballTeam(Map<String,FootballTeam> teamMap,String teamName){
+    private FootballTeam getFootballTeam(Map<String,FootballTeam> teamMap,String teamName,String regionName){
         FootballTeam team = null;
         try {
             team = footballTeamService.queryFootballTeamByTeamName(teamName);
@@ -136,6 +142,7 @@ public class FootballScorePageProcessor implements PageProcessor {
                     team = new FootballTeam();
                     team.setTeamName(StringUtils.trim(teamName));
                     team.setFootballTeamId(UUIDGeneratorUtils.generateUUID());
+                    team.setCountry(StringUtils.trim(regionName));
                     teamMap.put(teamName,team);
                 }
             }
