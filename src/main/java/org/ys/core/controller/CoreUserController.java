@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.ys.common.constant.CoreMenuContant;
+import org.ys.common.constant.CoreMenuConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
 import org.ys.common.util.PasswordUtils;
@@ -170,7 +170,7 @@ public class CoreUserController {
                 List<CoreMenu> coreMenus = coreMenuService.listCoreMenusByUserId(coreUser.getCoreUserId());
                 if(null != coreMenus && coreMenus.size() > 0){
                     for (CoreMenu coreMenu : coreMenus) {
-                        if(StringUtils.equals(CoreMenuContant.MENU_TYPE_PERMISSION,coreMenu.getMenuType())){
+                        if(StringUtils.equals(CoreMenuConstant.MENU_TYPE_PERMISSION,coreMenu.getMenuType())){
                             permiss.add(coreMenu.getPermission());
                         }
                     }

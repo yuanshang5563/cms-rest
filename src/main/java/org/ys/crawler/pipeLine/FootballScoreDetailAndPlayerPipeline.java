@@ -15,6 +15,7 @@ import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,8 +31,9 @@ public class FootballScoreDetailAndPlayerPipeline implements Pipeline {
     @Override
     public void process(ResultItems resultItems, Task task) {
         Map<String, FootballPlayer> playerMap = resultItems.get("playerMap");
-        Set<FootballScoreDetail> scoreDetailSet = resultItems.get("scoreDetailSet");
+        Map<String,Set<FootballScoreDetail>> scoreDetailMap = resultItems.get("scoreDetailSet");
         Set<String> delScoreIdsSet = new HashSet<String>();
+        Set<String> dontSaveSet = new HashSet<String>();
         try {
             if(null != playerMap && playerMap.size() > 0){
                 for (String key : playerMap.keySet()) {
@@ -44,17 +46,34 @@ public class FootballScoreDetailAndPlayerPipeline implements Pipeline {
                     }
                 }
             }
-            if(null != scoreDetailSet && scoreDetailSet.size() > 0){
-                for(FootballScoreDetail footballScoreDetail : scoreDetailSet){
-                    if(StringUtils.isNotEmpty(footballScoreDetail.getFootballScoreId())){
-                        FootballScore footballScore = footballScoreService.queryFootballScoreById(footballScoreDetail.getFootballScoreId());
-                        if(null != footballScore && !delScoreIdsSet.contains(footballScore.getFootballScoreId())){
-                            int result = footballScoreDetailService.delFootballScoreDetailsByScoreId(footballScore.getFootballScoreId());
-                            if(result != 0){
-                                delScoreIdsSet.add(footballScore.getFootballScoreId());
+            if(null != scoreDetailMap && scoreDetailMap.size() > 0){
+                Set<String> keySet = scoreDetailMap.keySet();
+                if(null != keySet && keySet.size() > 0){
+                    for (String scoreId : keySet) {
+                        FootballScore footballScore = footballScoreService.queryFootballScoreById(scoreId);
+                        if(null != footballScore){
+                            int goalCount = footballScore.getAwayScore() + footballScore.getHomeScore();
+                            Set<FootballScoreDetail> scoreDetailSet = scoreDetailMap.get(scoreId);
+                            List<FootballScoreDetail> existsScoreDetails = footballScoreDetailService.queryFootballScoreDetailsByScoreId(scoreId);
+                            if(null != existsScoreDetails && existsScoreDetails.size() > 0){
+                                //如果已存在详情数据,数据正确就不再保存了
+                                if(existsScoreDetails.size() == goalCount){
+                                    continue;
+                                }
+                            }
+                            if(null != scoreDetailSet && scoreDetailSet.size() > 0){
+                                //先清除先前的数据
+                                if(null != footballScore && !delScoreIdsSet.contains(footballScore.getFootballScoreId())){
+                                    int result = footballScoreDetailService.delFootballScoreDetailsByScoreId(footballScore.getFootballScoreId());
+                                    if(result != 0){
+                                        delScoreIdsSet.add(footballScore.getFootballScoreId());
+                                    }
+                                }
+                                for(FootballScoreDetail footballScoreDetail : scoreDetailSet){
+                                    footballScoreDetailService.save(footballScoreDetail);
+                                }
                             }
                         }
-                        footballScoreDetailService.save(footballScoreDetail);
                     }
                 }
             }

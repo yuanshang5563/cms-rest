@@ -9,8 +9,8 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.ys.common.constant.DruidContant;
-import org.ys.common.constant.RedisKeyContant;
+import org.ys.common.constant.DruidConstant;
+import org.ys.common.constant.RedisKeyConstant;
 import org.ys.core.model.CoreParameter;
 
 /**
@@ -35,26 +35,26 @@ public class DruidConfiguration {
     public ServletRegistrationBean statViewServlet() {
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
         // 添加IP白名单
-        CoreParameter allowParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_ALLOW+":");
+        CoreParameter allowParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_ALLOW+":");
         if(null != allowParam) {
         	servletRegistrationBean.addInitParameter("allow", allowParam.getParamValue());
         }
         // 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
-        CoreParameter denyParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_DENY+":");
+        CoreParameter denyParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_DENY+":");
         if(null != denyParam) {
         	servletRegistrationBean.addInitParameter("deny", denyParam.getParamValue());
         }
         // 添加控制台管理用户
-        CoreParameter loginUsernameParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_LOGIN_USER_NAME+":");
+        CoreParameter loginUsernameParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_LOGIN_USER_NAME+":");
         if(null != loginUsernameParam) {
         	 servletRegistrationBean.addInitParameter("loginUsername", loginUsernameParam.getParamValue());
         }
-        CoreParameter loginPasswordParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_LOGIN_PASS+":");
+        CoreParameter loginPasswordParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_LOGIN_PASS+":");
         if(null != loginPasswordParam) {
         	servletRegistrationBean.addInitParameter("loginPassword", loginPasswordParam.getParamValue());
         }
         // 是否能够重置数据
-        CoreParameter resetEnableParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_RESETABLE+":");
+        CoreParameter resetEnableParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_RESETABLE+":");
         if(null != resetEnableParam) {
         	servletRegistrationBean.addInitParameter("resetEnable", resetEnableParam.getParamValue());
         }
@@ -71,12 +71,12 @@ public class DruidConfiguration {
     public FilterRegistrationBean statFilter() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
         // 添加过滤规则
-        CoreParameter urlPatternParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_URL_PATTERN+":");
+        CoreParameter urlPatternParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_URL_PATTERN+":");
         if(null != urlPatternParam) {
         	filterRegistrationBean.addUrlPatterns(urlPatternParam.getParamValue());
         }
         // 忽略过滤格式
-        CoreParameter exclusionsParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyContant.CORE_PARAMETER+DruidContant.DRUID_CONF_EXCLUSIONS+":");
+        CoreParameter exclusionsParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ DruidConstant.DRUID_CONF_EXCLUSIONS+":");
         if(null != exclusionsParam) {
         	filterRegistrationBean.addInitParameter("exclusions", exclusionsParam.getParamValue());
         }

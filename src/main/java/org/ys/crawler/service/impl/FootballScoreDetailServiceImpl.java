@@ -100,4 +100,14 @@ public class FootballScoreDetailServiceImpl implements FootballScoreDetailServic
         }
         return 0;
     }
+
+    @Override
+    public List<FootballScoreDetail> queryFootballScoreDetailsByLeiDataId(String leidataScoreId) throws Exception {
+        if(StringUtils.isEmpty(leidataScoreId)){
+            return null;
+        }
+        FootballScoreDetailExample example = new FootballScoreDetailExample();
+        example.createCriteria().andLeidataScoreIdEqualTo(StringUtils.trim(leidataScoreId));
+        return footballScoreDetailMapper.selectByExample(example);
+    }
 }

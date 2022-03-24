@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.crawler.model.FootballLeagueMatch;
-import org.ys.crawler.model.FootballScore;
 import org.ys.crawler.model.FootballSeasonCategory;
 import org.ys.crawler.pipeLine.FootballScoreAndTeamPipeline;
 import org.ys.crawler.processor.FootballScorePageProcessor;
@@ -54,7 +53,7 @@ public class FootballScoreController {
         if(null != leagueMatches && leagueMatches.size() > 0){
             List<Request> requests = new ArrayList<Request>();
             for (FootballLeagueMatch leagueMatch : leagueMatches) {
-                List<Request> requestList = getRequestsByLeagueMatch(leagueMatch,LeidataCrawlerConstant.LEIDATA_CRAWLER_SCORE_TYPE);
+                List<Request> requestList = getRequestsByLeagueMatch(leagueMatch, LeiDataCrawlerConstant.LEIDATA_CRAWLER_SCORE_TYPE);
                 if(null != requestList && requestList.size() > 0){
                     requests.addAll(requestList);
                 }
@@ -62,7 +61,7 @@ public class FootballScoreController {
             spider = getSpider(requests);
         }
         if(null != spider){
-            return HttpResult.ok(spider.getStatus());
+            return HttpResult.ok("赛季比分爬虫启动成功！");
         }else{
             return HttpResult.error("赛季比分爬虫启动失败！");
         }
@@ -84,7 +83,7 @@ public class FootballScoreController {
             spider = getSpider(requests);
         }
         if(null != spider){
-            return HttpResult.ok(spider.getStatus());
+            return HttpResult.ok("本赛季比分爬虫启动成功！");
         }else{
             return HttpResult.error("本联赛赛季比分爬虫启动失败！");
         }
@@ -104,29 +103,29 @@ public class FootballScoreController {
         List<FootballSeasonCategory> seasonCategories = footballSeasonCategoryService.queryFootballSeasonCategoryByLeagueMatchId(leagueMatch.getFootballLeagueMatchId());
         List<Request> requests = new ArrayList<Request>();
         if(null != seasonCategories && seasonCategories.size() > 0){
-            String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeidataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
-                    ,LeidataCrawlerConstant.LEIDATA_CRAWLER_SEASON_SCORE_MIDDLE_WORD);
+            String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeiDataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
+                    , LeiDataCrawlerConstant.LEIDATA_CRAWLER_SEASON_SCORE_MIDDLE_WORD);
             Set<String> categoryIds = new HashSet<String>();
             for (FootballSeasonCategory category : seasonCategories) {
                 //总爬虫不重复爬取
-                if(StringUtils.isNotEmpty(crawType) && StringUtils.equals(crawType,LeidataCrawlerConstant.LEIDATA_CRAWLER_SCORE_TYPE)){
+                if(StringUtils.isNotEmpty(crawType) && StringUtils.equals(crawType, LeiDataCrawlerConstant.LEIDATA_CRAWLER_SCORE_TYPE)){
                     boolean existsFlag = footballScoreService.isExistsScoreByCategoryId(categoryIds, category.getFootballSeasonCategoryId());
                     if(existsFlag){
                         continue;
                     }
                 }
-                String url = LeidataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl+ category.getFootballSeasonCategoryUrl();
+                String url = LeiDataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl+ category.getFootballSeasonCategoryUrl();
                 int roundCount = category.getRoundCount();
                 if(roundCount > 1){
                     for (int i = 1; i <= roundCount; i++) {
                         String fullUrl = url + "?skip=0&round=" + i;
                         Request request = new Request(fullUrl);
-                        request.putExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY,category);
+                        request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY,category);
                         requests.add(request);
                     }
                 }else{
                     Request request = new Request(url);
-                    request.putExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY,category);
+                    request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY,category);
                     requests.add(request);
                 }
             }

@@ -3,8 +3,8 @@ package org.ys.common.constant;
 /**
  * 系统菜单或权限常量类
  */
-public class CoreMenuContant {
-	private CoreMenuContant() {}
+public class CoreMenuConstant {
+	private CoreMenuConstant() {}
 
 	/**
 	 *	菜单类型-目录

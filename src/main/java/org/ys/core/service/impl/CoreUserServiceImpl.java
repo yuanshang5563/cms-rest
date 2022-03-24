@@ -1,21 +1,16 @@
 package org.ys.core.service.impl;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.DictionariesGroupContant;
-import org.ys.common.constant.RedisKeyContant;
 import org.ys.common.page.PageBean;
 import org.ys.common.util.PasswordUtils;
 import org.ys.core.dao.CoreUserMapper;
 import org.ys.core.dao.CoreUserRoleMapper;
-import org.ys.core.model.CoreDictionaries;
 import org.ys.core.model.CoreUser;
 import org.ys.core.model.CoreUserExample;
 import org.ys.core.model.CoreUserRole;

@@ -5,8 +5,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.ys.common.constant.CrawlerConstant;
+import org.ys.common.constant.DruidConstant;
+import org.ys.common.constant.RedisKeyConstant;
 import org.ys.common.util.SiteUtils;
+import org.ys.core.model.CoreParameter;
 import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.service.FootballLeagueMatchService;
 import org.ys.common.util.UUIDGeneratorUtils;
@@ -23,6 +28,8 @@ import java.util.Map;
 public class LeagueMatchPageProcessor implements PageProcessor {
     @Autowired
     private FootballLeagueMatchService footballLeagueMatchService;
+    @Autowired
+    private RedisTemplate redisTemplate ;
 
     @Override
     public void process(Page page) {
@@ -38,9 +45,11 @@ public class LeagueMatchPageProcessor implements PageProcessor {
             Map<String,FootballLeagueMatch> footballMatchMaps =  new HashMap<String,FootballLeagueMatch>();
             if (null != footballLeagueMatches && footballLeagueMatches.size() > 0){
                 for(FootballLeagueMatch footballLeagueMatch : footballLeagueMatches){
-                    footballMatchMaps.put(footballLeagueMatch.getFootballLeagueMatchLevel(),footballLeagueMatch);
+                    footballMatchMaps.put(footballLeagueMatch.getLeagueMatchUrl(),footballLeagueMatch);
                 }
             }
+            CoreParameter crawIgnoreParam = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+ CrawlerConstant.CRAW_LEAGUE_MATCH_IGNORE_WORDS+":");
+            String crawIgnoreWord = crawIgnoreParam.getParamValue();
             List<FootballLeagueMatch> matches = new ArrayList<FootballLeagueMatch>();
             for(Element btnGroupDiv : btnGroupDives){
                 Elements btnGroupDives2 = btnGroupDiv.select("div.dropdown-menu");
@@ -51,13 +60,16 @@ public class LeagueMatchPageProcessor implements PageProcessor {
                         if (null != h6Tag){
                             matchRegionName = h6Tag.text();
                         }
+                        if(StringUtils.isEmpty(matchRegionName) || StringUtils.contains(crawIgnoreWord,matchRegionName)){
+                            continue;
+                        }
                         Elements aTags = btnGroupDiv2.getElementsByTag("a");
                         if(null != aTags && aTags.size() > 0){
                             for(Element aTag : aTags){
                                 String matchUrl = aTag.attr("href");
                                 String matchLevel = aTag.text();
-                                if(StringUtils.isNotEmpty(matchLevel)){
-                                    FootballLeagueMatch leagueMatch = footballMatchMaps.get(matchLevel.trim());
+                                if(StringUtils.isNotEmpty(matchUrl)){
+                                    FootballLeagueMatch leagueMatch = footballMatchMaps.get(matchUrl.trim());
                                     if(null == leagueMatch){
                                         leagueMatch = new FootballLeagueMatch();
                                         leagueMatch.setFootballLeagueMatchId(UUIDGeneratorUtils.generateUUID());

@@ -8,8 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.DictionariesGroupContant;
-import org.ys.common.constant.RedisKeyContant;
+import org.ys.common.constant.DictionariesGroupConstant;
+import org.ys.common.constant.RedisKeyConstant;
 import org.ys.common.page.PageBean;
 import org.ys.core.dao.CoreParameterMapper;
 import org.ys.core.model.CoreDictionaries;
@@ -95,12 +95,12 @@ public class CoreParameterServiceImpl implements CoreParameterService {
 	@Override
 	public Map<String, List<CoreDictionaries>> initDictionaries() {
 		Map<String,List<CoreDictionaries>> dictMap = new HashMap<>();
-		List<CoreDictionaries> dictList = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyContant.CORE_DICTIONARIES_GROUP+ DictionariesGroupContant.GROUP_PARAM_TYPE+":");
+		List<CoreDictionaries> dictList = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyConstant.CORE_DICTIONARIES_GROUP+ DictionariesGroupConstant.GROUP_PARAM_TYPE+":");
 		//如果缓存中没有就去数据库中找
 		if(null == dictList || dictList.size() > 0){
-			dictList = coreDictionariesService.listCoreDictionariesByDictGroupCode(DictionariesGroupContant.GROUP_PARAM_TYPE);
+			dictList = coreDictionariesService.listCoreDictionariesByDictGroupCode(DictionariesGroupConstant.GROUP_PARAM_TYPE);
 		}
-		dictMap.put(DictionariesGroupContant.GROUP_PARAM_TYPE,dictList);
+		dictMap.put(DictionariesGroupConstant.GROUP_PARAM_TYPE,dictList);
 		return dictMap;
 	}
 

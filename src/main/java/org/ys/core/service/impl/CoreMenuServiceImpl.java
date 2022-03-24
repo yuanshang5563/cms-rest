@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.CoreMenuContant;
+import org.ys.common.constant.CoreMenuConstant;
 import org.ys.common.page.PageBean;
 import org.ys.core.controller.vo.CoreMenuCondition;
 import org.ys.core.dao.CoreMenuMapper;
@@ -169,7 +169,7 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 		for (CoreMenu coreMenu : coreMenus) {
 			List<CoreMenu> children = new ArrayList<>();
 			for (CoreMenu menu : menus) {
-				if(StringUtils.equals(menuType,CoreMenuContant.MENU_TYPE_MENU) && StringUtils.equals(CoreMenuContant.MENU_TYPE_PERMISSION,menu.getMenuType())) {
+				if(StringUtils.equals(menuType, CoreMenuConstant.MENU_TYPE_MENU) && StringUtils.equals(CoreMenuConstant.MENU_TYPE_PERMISSION,menu.getMenuType())) {
 					// 如果是获取类型不需要按钮，且菜单类型是按钮的，直接过滤掉
 					continue ;
 				}

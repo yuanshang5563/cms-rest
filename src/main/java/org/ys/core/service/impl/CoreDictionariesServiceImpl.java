@@ -6,8 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.DictionariesGroupContant;
-import org.ys.common.constant.RedisKeyContant;
+import org.ys.common.constant.RedisKeyConstant;
 import org.ys.common.page.PageBean;
 import org.ys.core.dao.CoreDictionariesMapper;
 import org.ys.core.model.CoreDictionaries;
@@ -99,7 +98,7 @@ public class CoreDictionariesServiceImpl implements CoreDictionariesService {
 			return null;
 		}
 		//先从缓存中找再找数据库
-		List<CoreDictionaries> list = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyContant.CORE_DICTIONARIES_GROUP+ dictGroupCode.trim()+":");
+		List<CoreDictionaries> list = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyConstant.CORE_DICTIONARIES_GROUP+ dictGroupCode.trim()+":");
 		if (null == list || list.size() <= 0){
 			list = coreDictionariesMapper.listCoreDictionariesByDictGroupCode(dictGroupCode);
 		}
@@ -112,7 +111,7 @@ public class CoreDictionariesServiceImpl implements CoreDictionariesService {
 			return null;
 		}
 		//先从缓存中找再找数据库
-		CoreDictionaries dictionaries = (CoreDictionaries) redisTemplate.opsForValue().get(RedisKeyContant.CORE_DICTIONARIES+dictCode.trim()+":");
+		CoreDictionaries dictionaries = (CoreDictionaries) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_DICTIONARIES+dictCode.trim()+":");
 		if(null == dictionaries){
 			CoreDictionariesExample example = new CoreDictionariesExample();
 			example.createCriteria().andDictCodeEqualTo(dictCode.trim());

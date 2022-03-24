@@ -59,7 +59,9 @@ public class FootballLeagueMatchDownloader implements Downloader {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            driver.close();
+            if(null != driver){
+                driver.close();
+            }
         }
         return page;
     }

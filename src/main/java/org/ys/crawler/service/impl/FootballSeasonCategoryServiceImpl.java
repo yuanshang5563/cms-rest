@@ -6,14 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballSeasonCategoryMapper;
+import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballSeason;
 import org.ys.crawler.model.FootballSeasonCategory;
 import org.ys.crawler.model.FootballSeasonCategoryExample;
+import org.ys.crawler.service.FootballLeagueMatchService;
 import org.ys.crawler.service.FootballSeasonCategoryService;
 import org.ys.crawler.service.FootballSeasonService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("footballSeasonCategoryService")
 public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategoryService {
@@ -21,6 +25,8 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
     private FootballSeasonCategoryMapper footballSeasonCategoryMapper;
     @Autowired
     private FootballSeasonService footballSeasonService;
+    @Autowired
+    private FootballLeagueMatchService footballLeagueMatchService;
     @Override
     public FootballSeasonCategory queryFootballSeasonCategoryById(String footballSeasonCategoryId) throws Exception {
         if (StringUtils.isEmpty(footballSeasonCategoryId)){
@@ -82,6 +88,29 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballSeasonCategory> footballSeasonCategories = footballSeasonCategoryMapper.selectByExample(example);
+        if(null != footballSeasonCategories && footballSeasonCategories.size() > 0){
+            Map<String, FootballSeason> seasonMap = new HashMap<String,FootballSeason>();
+            Map<String, FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
+            for (FootballSeasonCategory footballSeasonCategory : footballSeasonCategories) {
+                FootballSeason season = seasonMap.get(footballSeasonCategory.getFootballSeasonId());
+                if(null == season){
+                    season = footballSeasonService.queryFootballSeasonById(footballSeasonCategory.getFootballSeasonId());
+                    if(null != season){
+                        seasonMap.put(footballSeasonCategory.getFootballSeasonId(),season);
+                    }
+                }
+                String leagueMatchId = season.getFootballLeagueMatchId();
+                FootballLeagueMatch leagueMatch = leagueMatchMap.get(leagueMatchId);
+                if(null == leagueMatch){
+                    leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(leagueMatchId);
+                    if(null != leagueMatch){
+                        leagueMatchMap.put(leagueMatchId,leagueMatch);
+                    }
+                }
+                footballSeasonCategory.setFootballSeasonName(season.getFootballSeasonName());
+                footballSeasonCategory.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+            }
+        }
         return new PageBean<FootballSeasonCategory>(footballSeasonCategories);
     }
 

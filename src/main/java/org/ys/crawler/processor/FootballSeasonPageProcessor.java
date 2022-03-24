@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.util.SiteUtils;
 import org.ys.crawler.model.FootballSeason;
 import org.ys.crawler.service.FootballSeasonService;
@@ -28,7 +28,7 @@ public class FootballSeasonPageProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         try {
-            String footballLeagueMatchId = page.getRequest().getExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID);
+            String footballLeagueMatchId = page.getRequest().getExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID);
             if(StringUtils.isNotEmpty(footballLeagueMatchId)){
                 List<FootballSeason> seasonList = new ArrayList<FootballSeason>();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");

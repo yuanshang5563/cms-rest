@@ -50,13 +50,13 @@ public class FootballPlayerController {
                 FootballTeamExample teamExample = new FootballTeamExample();
                 teamExample.createCriteria().andTeamNameLike("%"+teamName.trim()+"%");
                 List<FootballTeam> footballTeams = footballTeamService.queryFootballTeamsByExample(teamExample);
+                List<String> footballTeamIds = new ArrayList<String>();
                 if(null != footballTeams && footballTeams.size() > 0){
-                    List<String> footballTeamIds = new ArrayList<String>();
                     for (FootballTeam footballTeam : footballTeams) {
                         footballTeamIds.add(footballTeam.getFootballTeamId());
                     }
-                    criteria.andFootballTeamIdIn(footballTeamIds);
                 }
+                criteria.andFootballTeamIdIn(footballTeamIds);
             }
             if(StringUtils.isNotEmpty(footballTeamId)){
                 criteria.andFootballTeamIdEqualTo(footballTeamId.trim());

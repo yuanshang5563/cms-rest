@@ -1,7 +1,7 @@
 package org.ys.common.constant;
 
-public class SystemContant {
-    private SystemContant(){}
+public class SystemConstant {
+    private SystemConstant(){}
 
     /**
      *	超级管理员

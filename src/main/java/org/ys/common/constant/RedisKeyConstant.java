@@ -3,8 +3,8 @@ package org.ys.common.constant;
 /**
  * redis键值常量类
  */
-public class RedisKeyContant {
-	private RedisKeyContant() {}
+public class RedisKeyConstant {
+	private RedisKeyConstant() {}
 
 	/**
 	 *	所有菜单或权限key

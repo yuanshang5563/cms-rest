@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.controller.vo.FootballLeagueMatchCondition;
@@ -33,21 +33,26 @@ public class FootballLeagueMatchController {
     @Autowired
     private FootballLeagueMatchDownloader footballLeagueMatchDownloader;
 
+    @PreAuthorize("hasAuthority('ROLE_FOOTBALL_LEAGUE_MATCH_CRAW')")
     @GetMapping("/startLeagueMatchCrawler")
     public HttpResult startLeagueMatchCrawler(){
-        QueueScheduler scheduler = new QueueScheduler();
-        scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
-        Request request = new Request(LeidataCrawlerConstant.LEIDATA_CRAWLER_STATS_URL);
-        System.out.println("------------1---------");
-        Spider.create(leagueMatchPageProcessor)
-                .setDownloader(footballLeagueMatchDownloader)
-                .addPipeline(footballLeagueMatchPipeline)
-                .addRequest(request)
-                .setScheduler(scheduler)
-                .thread(1)
-                .start();
-        System.out.println("------------2---------");
-        return HttpResult.ok("执行成功！");
+        Spider spider = null;
+        try {
+            QueueScheduler scheduler = new QueueScheduler();
+            scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
+            Request request = new Request(LeiDataCrawlerConstant.LEIDATA_CRAWLER_STATS_URL);
+            spider = Spider.create(leagueMatchPageProcessor);
+            spider.setDownloader(footballLeagueMatchDownloader);
+            spider.addPipeline(footballLeagueMatchPipeline);
+            spider.addRequest(request);
+            spider.setScheduler(scheduler);
+            spider.thread(1);
+            spider.start();
+            return HttpResult.ok("联赛爬虫启动成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("联赛爬虫启动失败！");
+        }
     }
 
     @PreAuthorize("hasAuthority('ROLE_FOOTBALL_LEAGUE_MATCH_LIST')")

@@ -16,7 +16,7 @@
         </commentGenerator>
         <!--数据库链接URL，用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-         connectionURL="jdbc:mysql://127.0.0.1:3306/crawler?useUnicode=true&amp;characterEncoding=utf-8" userId="root" password="root">
+         connectionURL="jdbc:mysql://127.0.0.1:3306/cms-rest?useUnicode=true&amp;characterEncoding=utf-8" userId="root" password="root">
         </jdbcConnection>
         <javaTypeResolver>
             <!-- This property is used to specify whether MyBatis Generator should 
@@ -42,13 +42,13 @@
 
 
         <!-- 要生成哪些表 -->
-        <!--
-        <table tableName="cr_football_player" domainObjectName="FootballPlayer"
+        <table tableName="cr_football_score_detail" domainObjectName="FootballScoreDetail"
                enableCountByExample="true" enableUpdateByExample="true"
                enableDeleteByExample="true" enableSelectByExample="true"
                selectByExampleQueryId="true">
         </table>
-        <table tableName="cr_football_score_detail" domainObjectName="FootballScoreDetail"
+        <!--
+        <table tableName="cr_football_player" domainObjectName="FootballPlayer"
                enableCountByExample="true" enableUpdateByExample="true"
                enableDeleteByExample="true" enableSelectByExample="true"
                selectByExampleQueryId="true">

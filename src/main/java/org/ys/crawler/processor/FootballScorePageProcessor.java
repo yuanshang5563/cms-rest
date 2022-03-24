@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.util.SiteUtils;
 import org.ys.common.util.UUIDGeneratorUtils;
 import org.ys.crawler.model.FootballScore;
@@ -38,7 +38,7 @@ public class FootballScorePageProcessor implements PageProcessor {
         try {
             //是比分数据
             Json pageJson = page.getJson();
-            FootballSeasonCategory seasonCategory = page.getRequest().getExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY);
+            FootballSeasonCategory seasonCategory = page.getRequest().getExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY);
             if(null != seasonCategory){
                 List<FootballScore> footballScoreList = new ArrayList<FootballScore>();
                 Map<String,FootballTeam> teamMap = new HashMap<String,FootballTeam>();

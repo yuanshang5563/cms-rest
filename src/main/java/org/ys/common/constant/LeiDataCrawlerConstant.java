@@ -1,7 +1,7 @@
 package org.ys.common.constant;
 
-public class LeidataCrawlerConstant {
-    private LeidataCrawlerConstant() {}
+public class LeiDataCrawlerConstant {
+    private LeiDataCrawlerConstant() {}
 
     /**
      * 雷达体育资料库url

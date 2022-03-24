@@ -4,11 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.controller.vo.FootballSeasonCondition;
-import org.ys.crawler.controller.vo.FootballTeamCondition;
 import org.ys.crawler.model.*;
 import org.ys.crawler.pipeLine.FootballSeasonPipeline;
 import org.ys.crawler.processor.FootballSeasonPageProcessor;
@@ -50,11 +49,11 @@ public class FootballSeasonController {
                 if(StringUtils.isEmpty(match.getLeagueMatchUrl())){
                     continue;
                 }
-                String middleUrl = match.getLeagueMatchUrl().replace(LeidataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
-                ,LeidataCrawlerConstant.LEIDATA_CRAWLER_SEASON_MIDDLE_WORD);
-                String url = LeidataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl;
+                String middleUrl = match.getLeagueMatchUrl().replace(LeiDataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
+                , LeiDataCrawlerConstant.LEIDATA_CRAWLER_SEASON_MIDDLE_WORD);
+                String url = LeiDataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl;
                 Request request = new Request(url);
-                request.putExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID,match.getFootballLeagueMatchId());
+                request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID,match.getFootballLeagueMatchId());
                 requests.add(request);
             }
         }
@@ -66,7 +65,7 @@ public class FootballSeasonController {
             spider.startRequest(requests);
             spider.thread(1);
             spider.start();
-            return HttpResult.ok(spider.getStatus());
+            return HttpResult.ok("赛季爬虫启动成功！");
         }else{
             return HttpResult.error("赛季爬虫启动失败！");
         }
@@ -83,17 +82,17 @@ public class FootballSeasonController {
     public HttpResult startSeasonCrawlerByLeagueMatch(@RequestParam String footballLeagueMatchId) throws Exception{
         FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballLeagueMatchId);
         if(null != leagueMatch){
-            String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeidataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
-                    ,LeidataCrawlerConstant.LEIDATA_CRAWLER_SEASON_MIDDLE_WORD);
-            String url = LeidataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl;
+            String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeiDataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
+                    , LeiDataCrawlerConstant.LEIDATA_CRAWLER_SEASON_MIDDLE_WORD);
+            String url = LeiDataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl;
             Request request = new Request(url);
-            request.putExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID,leagueMatch.getFootballLeagueMatchId());
+            request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID,leagueMatch.getFootballLeagueMatchId());
             Spider spider = Spider.create(footballSeasonPageProcessor);
             spider.addPipeline(footballSeasonPipeline);
             spider.addRequest(request);
             spider.thread(1);
             spider.start();
-            return HttpResult.ok(spider.getStatus());
+            return HttpResult.ok(leagueMatch.getFootballLeagueMatchName()+"赛季爬虫启动成功！");
         }else{
             return HttpResult.error("赛季爬虫启动失败！");
         }

@@ -2,7 +2,7 @@ package org.ys.crawler.processor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.util.SiteUtils;
 import org.ys.crawler.model.FootballSeasonCategory;
 import us.codecraft.webmagic.Page;
@@ -18,7 +18,7 @@ public class FootballRoundPageProcessor implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        FootballSeasonCategory footballSeasonCategory = page.getRequest().getExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY);
+        FootballSeasonCategory footballSeasonCategory = page.getRequest().getExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY);
         Json pageJson = page.getJson();
         if(null != pageJson){
             List<Selectable> totalNode = pageJson.nodes();

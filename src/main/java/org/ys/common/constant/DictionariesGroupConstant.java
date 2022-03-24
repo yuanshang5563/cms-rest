@@ -3,8 +3,8 @@ package org.ys.common.constant;
 /**
  * 数据字典组常量类
  */
-public class DictionariesGroupContant {
-    private DictionariesGroupContant(){}
+public class DictionariesGroupConstant {
+    private DictionariesGroupConstant(){}
 
     /**
      *  性别常量

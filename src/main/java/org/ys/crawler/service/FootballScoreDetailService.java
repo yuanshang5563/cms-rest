@@ -84,4 +84,12 @@ public interface FootballScoreDetailService {
      * @throws Exception
      */
     public int delFootballScoreDetailsByScoreId(String footballScoreId) throws Exception;
+
+    /**
+     * 根据雷达id查询数据
+     * @param leidataScoreId
+     * @return
+     * @throws Exception
+     */
+    public List<FootballScoreDetail> queryFootballScoreDetailsByLeiDataId(String leidataScoreId) throws Exception;
 }

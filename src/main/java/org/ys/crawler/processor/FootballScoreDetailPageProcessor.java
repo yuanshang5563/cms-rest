@@ -5,15 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.ys.common.constant.LeidataCrawlerConstant;
+import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.util.SiteUtils;
 import org.ys.common.util.UUIDGeneratorUtils;
 import org.ys.crawler.model.FootballPlayer;
 import org.ys.crawler.model.FootballScore;
 import org.ys.crawler.model.FootballScoreDetail;
 import org.ys.crawler.service.FootballPlayerService;
-import org.ys.crawler.service.FootballScoreService;
-import org.ys.crawler.service.FootballSeasonService;
+import org.ys.crawler.service.FootballScoreDetailService;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -26,9 +25,7 @@ import java.util.*;
 @Component("footballScoreDetailPageProcessor")
 public class FootballScoreDetailPageProcessor implements PageProcessor {
     @Autowired
-    private FootballScoreService footballScoreService;
-    @Autowired
-    private FootballSeasonService footballSeasonService;
+    private FootballScoreDetailService footballScoreDetailService;
     @Autowired
     private FootballPlayerService footballPlayerService;
 
@@ -37,7 +34,7 @@ public class FootballScoreDetailPageProcessor implements PageProcessor {
         try {
             //是比分数据
             Json pageJson = page.getJson();
-            FootballScore footballScore = page.getRequest().getExtra(LeidataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SCORE);
+            FootballScore footballScore = page.getRequest().getExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SCORE);
             if(null != footballScore){
                 List<FootballScore> footballScoreList = new ArrayList<FootballScore>();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -46,7 +43,7 @@ public class FootballScoreDetailPageProcessor implements PageProcessor {
                 JsonNode jsonNode = objectMapper.readTree(pageJson.toString());
                 try {
                     Map<String,FootballPlayer> playerMap = new HashMap<String,FootballPlayer>();
-                    Set<FootballScoreDetail> scoreDetailSet = new HashSet<FootballScoreDetail>();
+                    Map<String,Set<FootballScoreDetail>> scoreDetailMap = new HashMap<String,Set<FootballScoreDetail>>();
                     //先解析球员，如果不在就创建
                     JsonNode matchLineupsNode = jsonNode.path("MatchLineups");
                     if(null != matchLineupsNode && matchLineupsNode.size() > 0){
@@ -86,6 +83,7 @@ public class FootballScoreDetailPageProcessor implements PageProcessor {
                     }
                     //比赛事件数据解析
                     JsonNode matchEventsNode = jsonNode.path("MatchEvents");
+                    JsonNode idNode = jsonNode.path("Id");
                     if(null != matchEventsNode && matchEventsNode.size() > 0){
                         Iterator<JsonNode> eventsIter = matchEventsNode.iterator();
                         while (eventsIter.hasNext()){
@@ -93,6 +91,10 @@ public class FootballScoreDetailPageProcessor implements PageProcessor {
                             JsonNode typeName = event.path("TypeName");
                             if(null != typeName && StringUtils.equals("进球",typeName.asText())){
                                 FootballScoreDetail scoreDetail = new FootballScoreDetail();
+                                if(null != idNode){
+                                    String id = idNode.asText();
+                                    scoreDetail.setLeidataScoreId(StringUtils.trim(id));
+                                }
                                 scoreDetail.setFootballScoreDetailId(UUIDGeneratorUtils.generateUUID());
                                 scoreDetail.setFootballScoreId(footballScore.getFootballScoreId());
                                 JsonNode timeNode = event.path("Time");
@@ -121,11 +123,17 @@ public class FootballScoreDetailPageProcessor implements PageProcessor {
                                         scoreDetail.setFootballPlayerId(footballPlayer.getFootballPlayerId());
                                     }
                                 }
-                                scoreDetailSet.add(scoreDetail);
+                                String scoreId = footballScore.getFootballScoreId();
+                                Set<FootballScoreDetail> detailSet = scoreDetailMap.get(scoreId);
+                                if(null == detailSet){
+                                    detailSet = new HashSet<FootballScoreDetail>();
+                                }
+                                detailSet.add(scoreDetail);
+                                scoreDetailMap.put(scoreId,detailSet);
                             }
                         }
                     }
-                    page.putField("scoreDetailSet",scoreDetailSet);
+                    page.putField("scoreDetailMap",scoreDetailMap);
                     page.putField("playerMap",playerMap);
                 } catch (Exception e) {
                     e.printStackTrace();
