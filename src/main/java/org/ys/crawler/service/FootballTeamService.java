@@ -70,12 +70,12 @@ public interface FootballTeamService {
     public PageBean<FootballTeam> pageFootballTeamsByExample(FootballTeamExample example, int pageNum, int pageSize) throws Exception;
 
     /**
-     * 根据指定名字查询
-     * @param teamName
+     * 根据指定entityId查询
+     * @param entityId
      * @return
      * @throws Exception
      */
-    public FootballTeam queryFootballTeamByTeamName(String teamName) throws Exception;
+    public FootballTeam queryFootballTeamByEntityId(String entityId) throws Exception;
 
     /**
      * 根据国家查询
@@ -84,4 +84,12 @@ public interface FootballTeamService {
      * @throws Exception
      */
     public List<FootballTeam> queryFootballTeamsByCountry(String country) throws Exception;
+
+    /**
+     * 根据名字查询
+     * @param teamName
+     * @return
+     * @throws Exception
+     */
+    public List<FootballTeam> queryFootballTeamsByName(String teamName) throws Exception;
 }

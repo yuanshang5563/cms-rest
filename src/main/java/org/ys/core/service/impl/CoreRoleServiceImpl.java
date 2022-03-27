@@ -52,7 +52,7 @@ public class CoreRoleServiceImpl implements CoreRoleService {
 	}
 
 	@Override
-	public void updateByExaple(CoreRole coreRole, CoreRoleExample example) throws Exception {
+	public void updateByExample(CoreRole coreRole, CoreRoleExample example) throws Exception {
 		if(null != coreRole && null != example) {
 			coreRoleMapper.updateByExample(coreRole, example);
 		}

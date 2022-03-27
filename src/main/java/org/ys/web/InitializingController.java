@@ -26,7 +26,7 @@ public class InitializingController implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("---------系统初始化开始---------------");
-        redisService.initSystemCach();
+        redisService.initSystemCache();
         logger.info("---------系统初始化结束---------------");
     }
 

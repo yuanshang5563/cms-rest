@@ -40,7 +40,7 @@ public interface CoreParameterService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public void updateByExaple(CoreParameter coreParameter, CoreParameterExample example) throws Exception;
+	public void updateByExample(CoreParameter coreParameter, CoreParameterExample example) throws Exception;
 
 	/**
 	 * 根据id删除
@@ -85,4 +85,12 @@ public interface CoreParameterService {
 	 * @param coreParameters
 	 */
 	public void convertCoreParametersDictionaries(List<CoreParameter> coreParameters);
+
+	/**
+	 * 更加参数代码获取参数
+	 * @param paramCode
+	 * @return
+	 * @throws Exception
+	 */
+	public CoreParameter queryCoreParameterByParamCode(String paramCode) throws Exception;
 }

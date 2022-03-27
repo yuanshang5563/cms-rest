@@ -28,7 +28,7 @@ public class RedisServiceImpl implements RedisService {
     private CoreDictionariesService coreDictionariesService;
 
     @Override
-    public void initSystemCach() throws Exception{
+    public void initSystemCache() throws Exception{
         CoreMenuExample example = new CoreMenuExample();
         List<CoreMenu> allMenuList = coreMenuService.queryCoreMenusByExample(example);
         redisTemplate.opsForList().leftPush(RedisKeyConstant.CORE_MENU_ALL_MENUS, allMenuList);
@@ -78,7 +78,20 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void refreshSystemCach() throws Exception{
-        initSystemCach();
+    public void refreshSystemCache() throws Exception{
+        initSystemCache();
+    }
+
+    @Override
+    public void refreshCoreParameter(CoreParameter coreParameter) throws Exception {
+        if(null != coreParameter && StringUtils.isNotEmpty(coreParameter.getParamCode())){
+            //先查一遍数据库是不是还在，不在就是删除了
+            CoreParameter parameter = coreParameterService.queryCoreParameterById(coreParameter.getCoreParamId());
+            if(null != parameter){
+                redisTemplate.opsForValue().set(RedisKeyConstant.CORE_PARAMETER+parameter.getParamCode()+":", coreParameter);
+            }else{
+                redisTemplate.delete(RedisKeyConstant.CORE_PARAMETER+coreParameter.getParamCode()+":");
+            }
+        }
     }
 }

@@ -135,18 +135,9 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         if(StringUtils.isEmpty(footballLeagueMatchId)){
             return null;
         }
-        List<FootballSeason> footballSeasons = footballSeasonService.queryFootballSeasonsByLeagueMatch(StringUtils.trim(footballLeagueMatchId));
-        if(null == footballSeasons || footballSeasons.size() == 0){
-            return null;
-        }
-        List<String> seasonIdList = new ArrayList<String>();
-        for (FootballSeason footballSeason : footballSeasons) {
-            seasonIdList.add(StringUtils.trim(footballSeason.getFootballSeasonId()));
-        }
         FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
-        example.createCriteria().andFootballSeasonIdIn(seasonIdList);
-        List<FootballSeasonCategory> footballSeasonCategories = footballSeasonCategoryMapper.selectByExample(example);
-        return footballSeasonCategories;
+        example.createCriteria().andFootballLeagueMatchIdEqualTo(footballLeagueMatchId);
+        return footballSeasonCategoryMapper.selectByExample(example);
     }
 
     @Override

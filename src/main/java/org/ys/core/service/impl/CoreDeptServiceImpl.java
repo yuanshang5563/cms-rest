@@ -50,7 +50,7 @@ public class CoreDeptServiceImpl implements CoreDeptService {
 	}
 
 	@Override
-	public int updateByExaple(CoreDept coreDept, CoreDeptExample example) throws Exception {
+	public int updateByExample(CoreDept coreDept, CoreDeptExample example) throws Exception {
 		if(null != coreDept && null != example) {
 			return coreDeptMapper.updateByExample(coreDept, example);
 		}

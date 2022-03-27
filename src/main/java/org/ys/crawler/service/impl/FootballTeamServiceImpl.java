@@ -82,14 +82,12 @@ public class FootballTeamServiceImpl implements FootballTeamService {
     }
 
     @Override
-    public FootballTeam queryFootballTeamByTeamName(String teamName) throws Exception {
-        if(StringUtils.isEmpty(teamName)){
+    public FootballTeam queryFootballTeamByEntityId(String entityId) throws Exception {
+        if(StringUtils.isEmpty(entityId)){
             return null;
         }
         FootballTeamExample example = new FootballTeamExample();
-        FootballTeamExample.Criteria criteria = example.createCriteria().andTeamNameEqualTo(StringUtils.trim(teamName));
-        FootballTeamExample.Criteria criteria1 = example.createCriteria().andTeamOtherNameEqualTo(StringUtils.trim(teamName));
-        example.or(criteria1);
+        FootballTeamExample.Criteria criteria = example.createCriteria().andEntityIdEqualTo(StringUtils.trim(entityId));
         List<FootballTeam> footballTeams = footballTeamMapper.selectByExample(example);
         if(null != footballTeams && footballTeams.size() > 0){
             return footballTeams.get(0);
@@ -104,7 +102,17 @@ public class FootballTeamServiceImpl implements FootballTeamService {
             return null;
         }
         FootballTeamExample example = new FootballTeamExample();
-        example.createCriteria().andCountryEqualTo(StringUtils.trim(country));
+        example.createCriteria().andCountryLike("%"+StringUtils.trim(country)+"%");
+        return footballTeamMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<FootballTeam> queryFootballTeamsByName(String teamName) throws Exception {
+        if(StringUtils.isEmpty(teamName)){
+            return null;
+        }
+        FootballTeamExample example = new FootballTeamExample();
+        example.createCriteria().andTeamNameLike("%"+StringUtils.trim(teamName)+"%");
         return footballTeamMapper.selectByExample(example);
     }
 }

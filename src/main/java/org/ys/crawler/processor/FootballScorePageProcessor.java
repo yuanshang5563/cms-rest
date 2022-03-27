@@ -99,18 +99,18 @@ public class FootballScorePageProcessor implements PageProcessor {
                         }
                         //如果球队不存在，创建球队
                         JsonNode homeTeamNode = node.path("HomeTeam");
-                        if(null != homeTeamNode && null != homeTeamNode.get(0) && null != homeTeamNode.get(0).path("name")){
-                            String homeTeamName = StringUtils.trim(homeTeamNode.get(0).path("name").asText());
-                            if(StringUtils.isNotEmpty(homeTeamName)){
-                                FootballTeam homeTeam = getFootballTeam(teamMap,homeTeamName,regionName);
+                        if(null != homeTeamNode && null != homeTeamNode.get(0)){
+                            JsonNode home = homeTeamNode.get(0);
+                            if(null != home){
+                                FootballTeam homeTeam = getFootballTeam(teamMap,home,regionName);
                                 footballScore.setHomeFootballTeamId(homeTeam.getFootballTeamId());
                             }
                         }
                         JsonNode awayTeamNode = node.path("AwayTeam");
-                        if(null != awayTeamNode && null != awayTeamNode.get(0) && null != awayTeamNode.get(0).path("name")){
-                            String awayTeamName = StringUtils.trim(awayTeamNode.get(0).path("name").asText());
-                            if(StringUtils.isNotEmpty(awayTeamName)){
-                                FootballTeam awayTeam = getFootballTeam(teamMap,awayTeamName,regionName);
+                        if(null != awayTeamNode && null != awayTeamNode.get(0)){
+                            JsonNode away = awayTeamNode.get(0);
+                            if(null != away){
+                                FootballTeam awayTeam = getFootballTeam(teamMap,away,regionName);
                                 footballScore.setAwayFootballTeamId(awayTeam.getFootballTeamId());
                             }
                         }
@@ -132,10 +132,12 @@ public class FootballScorePageProcessor implements PageProcessor {
         return SiteUtils.generateSite();
     }
 
-    private FootballTeam getFootballTeam(Map<String,FootballTeam> teamMap,String teamName,String regionName){
+    private FootballTeam getFootballTeam(Map<String,FootballTeam> teamMap,JsonNode node,String regionName){
         FootballTeam team = null;
         try {
-            team = footballTeamService.queryFootballTeamByTeamName(teamName);
+            String entityId = StringUtils.trim(node.path("id").asText());
+            String teamName = StringUtils.trim(node.path("name").asText());
+            team = footballTeamService.queryFootballTeamByEntityId(entityId);
             if(null == team){
                 team = teamMap.get(teamName);
                 if(null == team){
@@ -143,6 +145,7 @@ public class FootballScorePageProcessor implements PageProcessor {
                     team.setTeamName(StringUtils.trim(teamName));
                     team.setFootballTeamId(UUIDGeneratorUtils.generateUUID());
                     team.setCountry(StringUtils.trim(regionName));
+                    team.setEntityId(StringUtils.trim(entityId));
                     teamMap.put(teamName,team);
                 }
             }

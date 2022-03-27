@@ -47,7 +47,7 @@ public class CoreDictionariesServiceImpl implements CoreDictionariesService {
 	}
 
 	@Override
-	public void updateByExaple(CoreDictionaries coreDictionaries, CoreDictionariesExample example) throws Exception {
+	public void updateByExample(CoreDictionaries coreDictionaries, CoreDictionariesExample example) throws Exception {
 		if(null != coreDictionaries && null != example) {
 			coreDictionariesMapper.updateByExample(coreDictionaries, example);
 		}

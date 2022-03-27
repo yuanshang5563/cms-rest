@@ -89,6 +89,14 @@ public interface FootballScoreService {
     public List<FootballScore> queryFootballScoresBySeasonId(String footballSeasonId) throws Exception;
 
     /**
+     * 查询多个赛季的比分数据
+     * @param footballSeasonIds
+     * @return
+     * @throws Exception
+     */
+    public List<FootballScore> queryFootballScoresBySeasonId(List<String> footballSeasonIds) throws Exception;
+
+    /**
      * 根据联赛Id查询比分记录
      * @param footballLeagueMatchId
      * @return

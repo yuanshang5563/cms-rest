@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.ys.common.constant.CrawlerConstant;
 import org.ys.common.constant.DictionariesGroupConstant;
 import org.ys.common.constant.RedisKeyConstant;
 import org.ys.common.page.PageBean;
@@ -55,7 +56,7 @@ public class CoreParameterServiceImpl implements CoreParameterService {
 	}
 
 	@Override
-	public void updateByExaple(CoreParameter coreParameter, CoreParameterExample example) throws Exception {
+	public void updateByExample(CoreParameter coreParameter, CoreParameterExample example) throws Exception {
 		if(null != coreParameter && null != example) {
 			coreParameterMapper.updateByExample(coreParameter, example);
 		}
@@ -113,6 +114,24 @@ public class CoreParameterServiceImpl implements CoreParameterService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public CoreParameter queryCoreParameterByParamCode(String paramCode) throws Exception {
+		if(StringUtils.isEmpty(paramCode)){
+			return null;
+		}
+		//先从缓存中找再找数据库
+		CoreParameter parameter = (CoreParameter) redisTemplate.opsForValue().get(RedisKeyConstant.CORE_PARAMETER+paramCode+":");
+		if(null == parameter){
+			CoreParameterExample example = new CoreParameterExample();
+			example.createCriteria().andParamCodeEqualTo(StringUtils.trim(paramCode));
+			List<CoreParameter> parameters = coreParameterMapper.selectByExample(example);
+			if(null != parameters && parameters.size() > 0){
+				parameter = parameters.get(0);
+			}
+		}
+		return parameter;
 	}
 
 }

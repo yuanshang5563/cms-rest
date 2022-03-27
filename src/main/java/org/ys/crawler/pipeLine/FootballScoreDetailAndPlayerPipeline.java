@@ -31,9 +31,8 @@ public class FootballScoreDetailAndPlayerPipeline implements Pipeline {
     @Override
     public void process(ResultItems resultItems, Task task) {
         Map<String, FootballPlayer> playerMap = resultItems.get("playerMap");
-        Map<String,Set<FootballScoreDetail>> scoreDetailMap = resultItems.get("scoreDetailSet");
+        Map<String,Set<FootballScoreDetail>> scoreDetailMap = resultItems.get("scoreDetailMap");
         Set<String> delScoreIdsSet = new HashSet<String>();
-        Set<String> dontSaveSet = new HashSet<String>();
         try {
             if(null != playerMap && playerMap.size() > 0){
                 for (String key : playerMap.keySet()) {
@@ -54,13 +53,14 @@ public class FootballScoreDetailAndPlayerPipeline implements Pipeline {
                         if(null != footballScore){
                             int goalCount = footballScore.getAwayScore() + footballScore.getHomeScore();
                             Set<FootballScoreDetail> scoreDetailSet = scoreDetailMap.get(scoreId);
+                            /**
                             List<FootballScoreDetail> existsScoreDetails = footballScoreDetailService.queryFootballScoreDetailsByScoreId(scoreId);
                             if(null != existsScoreDetails && existsScoreDetails.size() > 0){
                                 //如果已存在详情数据,数据正确就不再保存了
                                 if(existsScoreDetails.size() == goalCount){
                                     continue;
                                 }
-                            }
+                            }*/
                             if(null != scoreDetailSet && scoreDetailSet.size() > 0){
                                 //先清除先前的数据
                                 if(null != footballScore && !delScoreIdsSet.contains(footballScore.getFootballScoreId())){

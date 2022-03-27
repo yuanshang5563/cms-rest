@@ -6,15 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballScoreMapper;
-import org.ys.crawler.model.FootballScore;
-import org.ys.crawler.model.FootballScoreExample;
-import org.ys.crawler.service.FootballScoreService;
+import org.ys.crawler.model.*;
+import org.ys.crawler.service.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service("footballScoreService")
 public class FootballScoreServiceImpl implements FootballScoreService {
+    @Autowired
+    private FootballTeamService footballTeamService;
+    @Autowired
+    private FootballLeagueMatchService footballLeagueMatchService;
+    @Autowired
+    private FootballSeasonService footballSeasonService;
+    @Autowired
+    private FootballSeasonCategoryService footballSeasonCategoryService;
     @Autowired
     private FootballScoreMapper footballScoreMapper;
 
@@ -79,6 +88,66 @@ public class FootballScoreServiceImpl implements FootballScoreService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballScore> footballScores = footballScoreMapper.selectByExample(example);
+        if(null != footballScores && footballScores.size() > 0){
+            Map<String,FootballTeam> teamMap = new HashMap<String,FootballTeam>();
+            Map<String,FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
+            Map<String,FootballSeason> seasonMap = new HashMap<String,FootballSeason>();
+            Map<String,FootballSeasonCategory> categoryMap = new HashMap<String,FootballSeasonCategory>();
+            for (FootballScore score : footballScores) {
+                //先填队名
+                FootballTeam homeTeam = teamMap.get(score.getHomeFootballTeamId());
+                if(null == homeTeam){
+                    homeTeam = footballTeamService.queryFootballTeamById(score.getHomeFootballTeamId());
+                    if(null != homeTeam){
+                        teamMap.put(homeTeam.getFootballTeamId(),homeTeam);
+                    }
+                }
+                if(null != homeTeam){
+                    score.setHomeFootballTeamName(homeTeam.getTeamName());
+                }
+                FootballTeam awayTeam = teamMap.get(score.getAwayFootballTeamId());
+                if(null == awayTeam){
+                    awayTeam = footballTeamService.queryFootballTeamById(score.getAwayFootballTeamId());
+                    if(null != awayTeam){
+                        teamMap.put(awayTeam.getFootballTeamId(),awayTeam);
+                    }
+                }
+                if(null != awayTeam){
+                    score.setAwayFootballTeamName(awayTeam.getTeamName());
+                }
+                //填充联赛，赛季，类别的名称
+                FootballLeagueMatch leagueMatch = leagueMatchMap.get(score.getFootballLeagueMatchId());
+                if(null == leagueMatch){
+                    leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(score.getFootballLeagueMatchId());
+                    if(null != leagueMatch){
+                        leagueMatchMap.put(score.getFootballLeagueMatchId(),leagueMatch);
+                    }
+                }
+                if(null != leagueMatch){
+                    score.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+                }
+                FootballSeason season = seasonMap.get(score.getFootballSeasonId());
+                if(null == season){
+                    season = footballSeasonService.queryFootballSeasonById(score.getFootballSeasonId());
+                    if(null != season){
+                        seasonMap.put(score.getFootballSeasonId(),season);
+                    }
+                }
+                if(null != season){
+                    score.setFootballSeasonName(season.getFootballSeasonName());
+                }
+                FootballSeasonCategory seasonCategory = categoryMap.get(score.getFootballSeasonCategoryId());
+                if(null == seasonCategory){
+                    seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(score.getFootballSeasonCategoryId());
+                    if(null != seasonCategory){
+                        categoryMap.put(score.getFootballSeasonCategoryId(),seasonCategory);
+                    }
+                }
+                if(null != seasonCategory){
+                    score.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
+                }
+            }
+        }
         return new PageBean<FootballScore>(footballScores);
     }
 
@@ -104,6 +173,17 @@ public class FootballScoreServiceImpl implements FootballScoreService {
         }
         FootballScoreExample example = new FootballScoreExample();
         example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
+        List<FootballScore> footballScores = footballScoreMapper.selectByExample(example);
+        return footballScores;
+    }
+
+    @Override
+    public List<FootballScore> queryFootballScoresBySeasonId(List<String> footballSeasonIds) throws Exception {
+        if(null == footballSeasonIds || footballSeasonIds.size() <= 0){
+            return null;
+        }
+        FootballScoreExample example = new FootballScoreExample();
+        example.createCriteria().andFootballSeasonIdIn(footballSeasonIds);
         List<FootballScore> footballScores = footballScoreMapper.selectByExample(example);
         return footballScores;
     }

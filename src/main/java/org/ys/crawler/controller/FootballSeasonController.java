@@ -8,7 +8,9 @@ import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.controller.vo.FootballSeasonCondition;
-import org.ys.crawler.model.*;
+import org.ys.crawler.model.FootballLeagueMatch;
+import org.ys.crawler.model.FootballSeason;
+import org.ys.crawler.model.FootballSeasonExample;
 import org.ys.crawler.pipeLine.FootballSeasonPipeline;
 import org.ys.crawler.processor.FootballSeasonPageProcessor;
 import org.ys.crawler.service.FootballLeagueMatchService;
@@ -24,7 +26,7 @@ import java.util.List;
 
 @RequestMapping("/crawler/footballSeasonController")
 @RestController
-public class FootballSeasonController {
+public class FootballSeasonController extends BaseCrawlerController{
     @Autowired
     private FootballLeagueMatchService footballLeagueMatchService;
     @Autowired
@@ -63,7 +65,7 @@ public class FootballSeasonController {
             Spider spider = Spider.create(footballSeasonPageProcessor).setScheduler(scheduler);
             spider.addPipeline(footballSeasonPipeline);
             spider.startRequest(requests);
-            spider.thread(1);
+            spider.thread(getThreadCount());
             spider.start();
             return HttpResult.ok("赛季爬虫启动成功！");
         }else{
@@ -90,7 +92,7 @@ public class FootballSeasonController {
             Spider spider = Spider.create(footballSeasonPageProcessor);
             spider.addPipeline(footballSeasonPipeline);
             spider.addRequest(request);
-            spider.thread(1);
+            spider.thread(getThreadCount());
             spider.start();
             return HttpResult.ok(leagueMatch.getFootballLeagueMatchName()+"赛季爬虫启动成功！");
         }else{

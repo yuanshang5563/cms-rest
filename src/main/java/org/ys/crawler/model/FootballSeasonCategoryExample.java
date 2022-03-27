@@ -533,6 +533,76 @@ public class FootballSeasonCategoryExample {
             addCriterion("round_count not between", value1, value2, "roundCount");
             return (Criteria) this;
         }
+
+        public Criteria andFootballLeagueMatchIdIsNull() {
+            addCriterion("football_league_match_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdIsNotNull() {
+            addCriterion("football_league_match_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdEqualTo(String value) {
+            addCriterion("football_league_match_id =", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdNotEqualTo(String value) {
+            addCriterion("football_league_match_id <>", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdGreaterThan(String value) {
+            addCriterion("football_league_match_id >", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdGreaterThanOrEqualTo(String value) {
+            addCriterion("football_league_match_id >=", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdLessThan(String value) {
+            addCriterion("football_league_match_id <", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdLessThanOrEqualTo(String value) {
+            addCriterion("football_league_match_id <=", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdLike(String value) {
+            addCriterion("football_league_match_id like", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdNotLike(String value) {
+            addCriterion("football_league_match_id not like", value, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdIn(List<String> values) {
+            addCriterion("football_league_match_id in", values, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdNotIn(List<String> values) {
+            addCriterion("football_league_match_id not in", values, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdBetween(String value1, String value2) {
+            addCriterion("football_league_match_id between", value1, value2, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFootballLeagueMatchIdNotBetween(String value1, String value2) {
+            addCriterion("football_league_match_id not between", value1, value2, "footballLeagueMatchId");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -20,10 +20,13 @@ import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/crawler/footballLeagueMatchController")
 @RestController
-public class FootballLeagueMatchController {
+public class FootballLeagueMatchController extends BaseCrawlerController{
     @Autowired
     private FootballLeagueMatchService footballLeagueMatchService;
     @Autowired
@@ -46,7 +49,7 @@ public class FootballLeagueMatchController {
             spider.addPipeline(footballLeagueMatchPipeline);
             spider.addRequest(request);
             spider.setScheduler(scheduler);
-            spider.thread(1);
+            spider.thread(getThreadCount());
             spider.start();
             return HttpResult.ok("联赛爬虫启动成功！");
         } catch (Exception e) {
@@ -93,6 +96,29 @@ public class FootballLeagueMatchController {
         try {
             FootballLeagueMatch footballLeagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballLeagueMatchId.trim());
             return HttpResult.ok(footballLeagueMatch);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_FOOTBALL_LEAGUE_MATCH_LIST_ALL')")
+    @GetMapping("/findAllLeagueMatch")
+    public HttpResult findAllLeagueMatch(){
+        try {
+            Map<String,List<FootballLeagueMatch>> leagueMatchMap = new HashMap<String,List<FootballLeagueMatch>>();
+            List<FootballLeagueMatch> leagueMatches = footballLeagueMatchService.queryAll();
+            if(null != leagueMatches && leagueMatches.size() > 0){
+                for (FootballLeagueMatch leagueMatch : leagueMatches) {
+                    List<FootballLeagueMatch> matchList = leagueMatchMap.get(leagueMatch.getRegionName());
+                    if(null == matchList){
+                        matchList = new ArrayList<FootballLeagueMatch>();
+                        leagueMatchMap.put(leagueMatch.getRegionName(),matchList);
+                    }
+                    matchList.add(leagueMatch);
+                }
+            }
+            return HttpResult.ok(leagueMatchMap);
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

@@ -543,6 +543,76 @@ public class FootballTeamExample {
             addCriterion("country not between", value1, value2, "country");
             return (Criteria) this;
         }
+
+        public Criteria andEntityIdIsNull() {
+            addCriterion("entity_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdIsNotNull() {
+            addCriterion("entity_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdEqualTo(String value) {
+            addCriterion("entity_id =", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdNotEqualTo(String value) {
+            addCriterion("entity_id <>", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdGreaterThan(String value) {
+            addCriterion("entity_id >", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdGreaterThanOrEqualTo(String value) {
+            addCriterion("entity_id >=", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdLessThan(String value) {
+            addCriterion("entity_id <", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdLessThanOrEqualTo(String value) {
+            addCriterion("entity_id <=", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdLike(String value) {
+            addCriterion("entity_id like", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdNotLike(String value) {
+            addCriterion("entity_id not like", value, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdIn(List<String> values) {
+            addCriterion("entity_id in", values, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdNotIn(List<String> values) {
+            addCriterion("entity_id not in", values, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdBetween(String value1, String value2) {
+            addCriterion("entity_id between", value1, value2, "entityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEntityIdNotBetween(String value1, String value2) {
+            addCriterion("entity_id not between", value1, value2, "entityId");
+            return (Criteria) this;
+        }
     }
 
     /**

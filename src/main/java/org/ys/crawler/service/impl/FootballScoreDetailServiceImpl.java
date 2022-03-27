@@ -6,16 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballScoreDetailMapper;
+import org.ys.crawler.model.FootballPlayer;
 import org.ys.crawler.model.FootballScoreDetail;
 import org.ys.crawler.model.FootballScoreDetailExample;
+import org.ys.crawler.model.FootballTeam;
+import org.ys.crawler.service.FootballPlayerService;
 import org.ys.crawler.service.FootballScoreDetailService;
+import org.ys.crawler.service.FootballTeamService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("footballScoreDetailService")
 public class FootballScoreDetailServiceImpl implements FootballScoreDetailService {
     @Autowired
     private FootballScoreDetailMapper footballScoreDetailMapper;
+    @Autowired
+    private FootballTeamService footballTeamService;
+    @Autowired
+    private FootballPlayerService footballPlayerService;
 
     @Override
     public FootballScoreDetail queryFootballScoreDetailById(String footballScoreDetailId) throws Exception {
@@ -78,6 +88,32 @@ public class FootballScoreDetailServiceImpl implements FootballScoreDetailServic
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballScoreDetail> footballScoreDetails = footballScoreDetailMapper.selectByExample(example);
+        if(null != footballScoreDetails && footballScoreDetails.size() > 0){
+            Map<String,FootballTeam> teamMap = new HashMap<String,FootballTeam>();
+            Map<String,FootballPlayer> playerMap = new HashMap<String,FootballPlayer>();
+            for (FootballScoreDetail detail : footballScoreDetails) {
+                FootballTeam team = teamMap.get(detail.getGoalFootballTeamId());
+                if(null == team){
+                    team = footballTeamService.queryFootballTeamById(detail.getGoalFootballTeamId());
+                    if(null != team){
+                        teamMap.put(detail.getGoalFootballTeamId(),team);
+                    }
+                }
+                if(null != team){
+                    detail.setTeamName(team.getTeamName());
+                }
+                FootballPlayer player = playerMap.get(detail.getFootballPlayerId());
+                if(null == player){
+                    player = footballPlayerService.queryFootballPlayerById(detail.getFootballPlayerId());
+                    if(null != player){
+                        playerMap.put(detail.getFootballPlayerId(),player);
+                    }
+                }
+                if(null != player){
+                    detail.setFootballPlayerName(player.getFootballPlayerName());
+                }
+            }
+        }
         return new PageBean<FootballScoreDetail>(footballScoreDetails);
     }
 

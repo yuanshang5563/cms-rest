@@ -40,7 +40,7 @@ public interface CoreDictionariesGroupService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public void updateByExaple(CoreDictionariesGroup coreDictionariesGroup, CoreDictionariesGroupExample example) throws Exception;
+	public void updateByExample(CoreDictionariesGroup coreDictionariesGroup, CoreDictionariesGroupExample example) throws Exception;
 
 	/**
 	 * 根据id删除

@@ -1,10 +1,11 @@
 package org.ys.crawler.dao;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import org.ys.crawler.model.FootballTeam;
 import org.ys.crawler.model.FootballTeamExample;
+
+import java.util.List;
 
 @Repository
 public interface FootballTeamMapper {

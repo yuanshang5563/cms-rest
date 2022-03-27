@@ -49,7 +49,7 @@ public class CoreDictionariesGroupServiceImpl implements CoreDictionariesGroupSe
 	}
 
 	@Override
-	public void updateByExaple(CoreDictionariesGroup coreDictionariesGroup, CoreDictionariesGroupExample example) throws Exception {
+	public void updateByExample(CoreDictionariesGroup coreDictionariesGroup, CoreDictionariesGroupExample example) throws Exception {
 		if(null != coreDictionariesGroup && null != example) {
 			coreDictionariesGroupMapper.updateByExample(coreDictionariesGroup, example);
 		}

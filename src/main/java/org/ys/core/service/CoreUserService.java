@@ -51,7 +51,7 @@ public interface CoreUserService {
 	 * @return
 	 * @throws Exception
 	 */
-	public int updateByExaple(CoreUser coreUser, CoreUserExample example) throws Exception;
+	public int updateByExample(CoreUser coreUser, CoreUserExample example) throws Exception;
 
 	/**
 	 * 根据id删除

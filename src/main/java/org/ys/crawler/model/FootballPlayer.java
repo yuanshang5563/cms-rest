@@ -59,7 +59,7 @@ public class FootballPlayer implements Serializable {
      */
     private String entityId;
 
-    // 非数据库字段,联赛名称
+    // 非数据库字段,球队名称
     private String teamName;
 
     /**

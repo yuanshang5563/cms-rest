@@ -80,6 +80,7 @@ public class FootballSeasonCategoryPageProcessor implements PageProcessor {
             seasonCategory = new FootballSeasonCategory();
             seasonCategory.setFootballSeasonId(footballSeason.getFootballSeasonId());
             seasonCategory.setFootballSeasonCategoryName(seasonCategoryName);
+            seasonCategory.setFootballLeagueMatchId(footballSeason.getFootballLeagueMatchId());
         }
         seasonCategory.setFootballSeasonCategoryUrl(seasonCategoryUrl);
         return seasonCategory;

@@ -10,6 +10,7 @@ import org.ys.core.controller.vo.CoreParameterCondition;
 import org.ys.core.model.CoreParameter;
 import org.ys.core.model.CoreParameterExample;
 import org.ys.core.service.CoreParameterService;
+import org.ys.core.service.RedisService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,8 @@ import java.util.List;
 public class CoreParameterController {
     @Autowired
     private CoreParameterService coreParameterService;
+    @Autowired
+    private RedisService redisService;
 
     @PreAuthorize("hasAuthority('ROLE_CORE_PARAM_LIST')")
     @PostMapping("/findPage")
@@ -77,6 +80,7 @@ public class CoreParameterController {
                 coreParameter.setModifiedTime(new Date());
                 coreParameterService.updateById(coreParameter);
             }
+            redisService.refreshCoreParameter(coreParameter);
             return HttpResult.ok("保存成功！");
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,6 +96,8 @@ public class CoreParameterController {
         }
         try {
             coreParameterService.delCoreParameterById(coreParamId);
+            CoreParameter parameter = coreParameterService.queryCoreParameterById(coreParamId);
+            redisService.refreshCoreParameter(parameter);
             return HttpResult.ok("删除成功！");
         } catch (Exception e) {
             e.printStackTrace();

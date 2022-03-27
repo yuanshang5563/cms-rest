@@ -40,7 +40,7 @@ public interface CoreMenuService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public void updateByExaple(CoreMenu corePermission, CoreMenuExample example) throws Exception;
+	public void updateByExample(CoreMenu corePermission, CoreMenuExample example) throws Exception;
 
 	/**
 	 * 根据id删除

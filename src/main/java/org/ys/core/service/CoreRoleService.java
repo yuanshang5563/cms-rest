@@ -39,7 +39,7 @@ public interface CoreRoleService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public void updateByExaple(CoreRole coreRole, CoreRoleExample example) throws Exception;
+	public void updateByExample(CoreRole coreRole, CoreRoleExample example) throws Exception;
 
 	/**
 	 * 根据id删除

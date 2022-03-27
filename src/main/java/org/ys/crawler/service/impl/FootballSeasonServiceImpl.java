@@ -123,6 +123,7 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
         }
         FootballSeasonExample example = new FootballSeasonExample();
         example.createCriteria().andFootballLeagueMatchIdEqualTo(StringUtils.trim(footballLeagueMatchId));
+        example.setOrderByClause(" season_begin_date desc");
         List<FootballSeason> footballSeasons = footballSeasonMapper.selectByExample(example);
         return footballSeasons;
     }

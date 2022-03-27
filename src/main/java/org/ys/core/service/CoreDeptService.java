@@ -40,7 +40,7 @@ public interface CoreDeptService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public int updateByExaple(CoreDept coreDept, CoreDeptExample example) throws Exception;
+	public int updateByExample(CoreDept coreDept, CoreDeptExample example) throws Exception;
 
 	/**
 	 * 根据Id删除

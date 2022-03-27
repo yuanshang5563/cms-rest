@@ -18,7 +18,6 @@ import org.ys.crawler.service.FootballSeasonCategoryService;
 import org.ys.crawler.service.FootballSeasonService;
 import us.codecraft.webmagic.Request;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import java.util.Set;
 
 @RequestMapping("/crawler/footballSeasonCategoryController")
 @RestController
-public class FootballSeasonCategoryController {
+public class FootballSeasonCategoryController extends BaseCrawlerController{
     @Autowired
     private FootballSeasonService footballSeasonService;
     @Autowired
@@ -61,9 +60,6 @@ public class FootballSeasonCategoryController {
             if(StringUtils.isNotEmpty(categoryName)){
                 criteria.andFootballSeasonCategoryNameLike("%"+categoryName.trim()+"%");
             }
-            if(StringUtils.isEmpty(leagueMatchId) && StringUtils.isNotEmpty(seasonId)){
-                criteria.andFootballSeasonIdEqualTo(seasonId.trim());
-            }
             if(StringUtils.isNotEmpty(seasonName)){
                 FootballSeasonExample seasonExample = new FootballSeasonExample();
                 seasonExample.createCriteria().andFootballSeasonNameLike("%"+seasonName.trim()+"%");
@@ -74,18 +70,12 @@ public class FootballSeasonCategoryController {
                 }
                 criteria.andFootballSeasonIdIn(footballSeasonIds);
             }
-            if(StringUtils.isNotEmpty(leagueMatchId)){
-                //如果联赛Id和赛季id都不空，就只查赛季的
-                if(StringUtils.isNotEmpty(seasonId)){
-                    criteria.andFootballSeasonIdEqualTo(seasonId.trim());
-                }else{
-                    //如果该联赛没有下属赛季，新建一个空List
-                    List<FootballSeason> seasons = footballSeasonService.queryFootballSeasonsByLeagueMatch(leagueMatchId);
-                    List<String> footballSeasonIds = getSeasonList(seasons);
-                    if(null == footballSeasonIds){
-                        footballSeasonIds = new ArrayList<String>();
-                    }
-                    criteria.andFootballSeasonIdIn(footballSeasonIds);
+            //有小的优先查小的
+            if(StringUtils.isNotEmpty(seasonId)){
+                criteria.andFootballSeasonIdEqualTo(seasonId.trim());
+            }else{
+                if(StringUtils.isNotEmpty(leagueMatchId)){
+                    criteria.andFootballLeagueMatchIdEqualTo(leagueMatchId);
                 }
             }
             pageBean = footballSeasonCategoryService.pageFootballSeasonCategoriesByExample(example, seasonCategoryCondition.getPageNum(), seasonCategoryCondition.getPageSize());
@@ -261,7 +251,7 @@ public class FootballSeasonCategoryController {
             spider = Spider.create(footballRoundPageProcessor).setScheduler(scheduler);
             spider.addPipeline(footballRoundPipeline);
             spider.startRequest(requests);
-            spider.thread(1);
+            spider.thread(getThreadCount());
             spider.start();
         }
         return spider;
@@ -278,16 +268,6 @@ public class FootballSeasonCategoryController {
     }
 
     /**
-     * 获取过滤器
-     * @return
-     */
-    private QueueScheduler getQueueScheduler() {
-        QueueScheduler scheduler = new QueueScheduler();
-        scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
-        return scheduler;
-    }
-
-    /**
      * 根据request启动赛季类别爬虫
      * @param requests
      * @return
@@ -299,7 +279,7 @@ public class FootballSeasonCategoryController {
             spider = Spider.create(footballSeasonCategoryPageProcessor).setScheduler(scheduler);
             spider.addPipeline(footballSeasonCategoryPipeline);
             spider.startRequest(requests);
-            spider.thread(4);
+            spider.thread(getThreadCount());
             spider.start();
         }
         return spider;

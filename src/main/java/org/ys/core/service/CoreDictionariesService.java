@@ -38,7 +38,7 @@ public interface CoreDictionariesService {
 	 * @param example
 	 * @throws Exception
 	 */
-	public void updateByExaple(CoreDictionaries coreDictionaries, CoreDictionariesExample example) throws Exception;
+	public void updateByExample(CoreDictionaries coreDictionaries, CoreDictionariesExample example) throws Exception;
 
 	/**
 	 * 根据id删除

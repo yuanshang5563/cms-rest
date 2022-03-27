@@ -43,7 +43,7 @@ public class CoreMenuServiceImpl implements CoreMenuService{
 	}
 
 	@Override
-	public void updateByExaple(CoreMenu corePermission, CoreMenuExample example) throws Exception {
+	public void updateByExample(CoreMenu corePermission, CoreMenuExample example) throws Exception {
 		if(null != corePermission && null != example) {
 			coreMenuMapper.updateByExample(corePermission, example);
 		}

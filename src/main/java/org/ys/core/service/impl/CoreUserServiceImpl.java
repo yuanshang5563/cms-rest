@@ -73,7 +73,7 @@ public class CoreUserServiceImpl implements CoreUserService {
 	}
 
 	@Override
-	public int updateByExaple(CoreUser coreUser, CoreUserExample example) throws Exception {
+	public int updateByExample(CoreUser coreUser, CoreUserExample example) throws Exception {
 		if(null != coreUser && null != example) {
 			return coreUserMapper.updateByExample(coreUser, example);
 		}
@@ -134,12 +134,12 @@ public class CoreUserServiceImpl implements CoreUserService {
 //	@Override
 //	public Map<String,List<CoreDictionaries>> initDictionaries(){
 //		Map<String,List<CoreDictionaries>> dictMap = new HashMap<>();
-//		List<CoreDictionaries> dictList = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyContant.CORE_DICTIONARIES_GROUP+ DictionariesGroupContant.GROUP_SEX+":");
+//		List<CoreDictionaries> dictList = (List<CoreDictionaries>) redisTemplate.opsForList().leftPop(RedisKeyConstant.CORE_DICTIONARIES_GROUP+ DictionariesGroupConstant.GROUP_SEX+":");
 //		//如果缓存中没有就去数据库中找
 //		if(null == dictList || dictList.size() > 0){
-//			dictList = coreDictionariesService.listCoreDictionariesByDictGroupCode(DictionariesGroupContant.GROUP_SEX);
+//			dictList = coreDictionariesService.listCoreDictionariesByDictGroupCode(DictionariesGroupConstant.GROUP_SEX);
 //		}
-//		dictMap.put(DictionariesGroupContant.GROUP_SEX,dictList);
+//		dictMap.put(DictionariesGroupConstant.GROUP_SEX,dictList);
 //		return dictMap;
 //	}
 //
