@@ -51,10 +51,20 @@ public class FootballScoreController extends BaseCrawlerController{
             String footballLeagueMatchId = scoreCondition.getFootballLeagueMatchId();
             String footballSeasonCategoryId = scoreCondition.getFootballSeasonCategoryId();
             String footballSeasonId = scoreCondition.getFootballSeasonId();
+            String cascaderId = scoreCondition.getCascaderId();
             FootballScoreExample example = new FootballScoreExample();
             FootballScoreExample.Criteria criteria = example.createCriteria();
             if(StringUtils.isNotEmpty(round)){
                 criteria.andRoundEqualTo(round.trim());
+            }
+            if(StringUtils.isNotEmpty(cascaderId)){
+                if(cascaderId.contains("footballLeagueMatchId:")){
+                    footballLeagueMatchId = cascaderId.replaceAll("footballLeagueMatchId:","");
+                }else if(cascaderId.contains("footballSeasonId:")){
+                    footballSeasonId = cascaderId.replaceAll("footballSeasonId:","");
+                }else if(cascaderId.contains("footballSeasonCategoryId:")){
+                    footballSeasonCategoryId = cascaderId.replaceAll("footballSeasonCategoryId:","");
+                }
             }
             //类别，赛季和联赛都不为空，哪个最小查哪个
             if(StringUtils.isNotEmpty(footballSeasonCategoryId)){

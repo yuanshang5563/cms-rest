@@ -1,6 +1,7 @@
 package org.ys.crawler.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
 import org.ys.crawler.model.FootballSeason;
 import org.ys.crawler.model.FootballSeasonExample;
 
@@ -85,4 +86,12 @@ public interface FootballSeasonService {
      * @throws Exception
      */
     public List<FootballSeason> queryFootballSeasonsByLeagueMatch(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 根据联赛id获取赛季的级联数据
+     * @param footballLeagueMatchId
+     * @return
+     * @throws Exception
+     */
+    public List<CascaderTreeItem> findSeasonCascaderItemByLeagueMatchId(String footballLeagueMatchId) throws Exception;
 }

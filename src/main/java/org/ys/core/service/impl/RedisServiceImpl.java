@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.CoreMenuConstant;
+import org.ys.core.constant.CoreMenuConstant;
 import org.ys.common.constant.RedisKeyConstant;
 import org.ys.core.model.*;
 import org.ys.core.service.*;

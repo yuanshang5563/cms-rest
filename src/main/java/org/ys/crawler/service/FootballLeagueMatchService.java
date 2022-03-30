@@ -1,6 +1,7 @@
 package org.ys.crawler.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
 import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballLeagueMatchExample;
 
@@ -93,4 +94,10 @@ public interface FootballLeagueMatchService {
      */
     public FootballLeagueMatch queryFootballLeagueMatchesByName(String footballLeagueMatchName) throws Exception;
 
+    /**
+     * 获取联赛的级联数据
+     * @return
+     * @throws Exception
+     */
+    public List<CascaderTreeItem> findLeagueMatchCascaderItem() throws Exception;
 }

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
+import org.ys.core.controller.vo.CoreDeptCondition;
 import org.ys.crawler.controller.vo.FootballLeagueMatchCondition;
 import org.ys.crawler.downloader.FootballLeagueMatchDownloader;
 import org.ys.crawler.model.FootballLeagueMatch;
@@ -102,23 +104,15 @@ public class FootballLeagueMatchController extends BaseCrawlerController{
         }
     }
 
-    @PreAuthorize("hasAuthority('ROLE_FOOTBALL_LEAGUE_MATCH_LIST_ALL')")
-    @GetMapping("/findAllLeagueMatch")
-    public HttpResult findAllLeagueMatch(){
+    /**
+     * 获取联赛的级联数据
+     * @return
+     */
+    @GetMapping("/findLeagueMatchCascaderItem")
+    public HttpResult findLeagueMatchCascaderItem(){
         try {
-            Map<String,List<FootballLeagueMatch>> leagueMatchMap = new HashMap<String,List<FootballLeagueMatch>>();
-            List<FootballLeagueMatch> leagueMatches = footballLeagueMatchService.queryAll();
-            if(null != leagueMatches && leagueMatches.size() > 0){
-                for (FootballLeagueMatch leagueMatch : leagueMatches) {
-                    List<FootballLeagueMatch> matchList = leagueMatchMap.get(leagueMatch.getRegionName());
-                    if(null == matchList){
-                        matchList = new ArrayList<FootballLeagueMatch>();
-                        leagueMatchMap.put(leagueMatch.getRegionName(),matchList);
-                    }
-                    matchList.add(leagueMatch);
-                }
-            }
-            return HttpResult.ok(leagueMatchMap);
+            List<CascaderTreeItem> cascaderItemList = footballLeagueMatchService.findLeagueMatchCascaderItem();
+            return HttpResult.ok(cascaderItemList);
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

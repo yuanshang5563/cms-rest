@@ -12,6 +12,7 @@ public class FootballSeasonCategoryCondition extends BasecCondition {
     private String footballSeasonId;
     private String footballSeasonCategoryName;
     private String footballSeasonName;
+    private String cascaderId;
 
     public String getFootballLeagueMatchId() {
         return footballLeagueMatchId;
@@ -43,5 +44,13 @@ public class FootballSeasonCategoryCondition extends BasecCondition {
 
     public void setFootballSeasonName(String footballSeasonName) {
         this.footballSeasonName = footballSeasonName;
+    }
+
+    public String getCascaderId() {
+        return cascaderId;
+    }
+
+    public void setCascaderId(String cascaderId) {
+        this.cascaderId = cascaderId;
     }
 }

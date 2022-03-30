@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
 import org.ys.crawler.controller.vo.FootballSeasonCategoryCondition;
 import org.ys.crawler.model.*;
 import org.ys.crawler.pipeLine.FootballRoundPipeline;
@@ -55,6 +56,7 @@ public class FootballSeasonCategoryController extends BaseCrawlerController{
             String seasonId = seasonCategoryCondition.getFootballSeasonId();
             String categoryName = seasonCategoryCondition.getFootballSeasonCategoryName();
             String seasonName = seasonCategoryCondition.getFootballSeasonName();
+            String cascaderId = seasonCategoryCondition.getCascaderId();
             FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
             FootballSeasonCategoryExample.Criteria criteria = example.createCriteria();
             if(StringUtils.isNotEmpty(categoryName)){
@@ -69,6 +71,13 @@ public class FootballSeasonCategoryController extends BaseCrawlerController{
                     footballSeasonIds = new ArrayList<String>();
                 }
                 criteria.andFootballSeasonIdIn(footballSeasonIds);
+            }
+            if(StringUtils.isNotEmpty(cascaderId)){
+                if(cascaderId.contains("footballLeagueMatchId:")){
+                    leagueMatchId = cascaderId.replaceAll("footballLeagueMatchId:","");
+                }else if(cascaderId.contains("footballSeasonId:")){
+                    seasonId = cascaderId.replaceAll("footballSeasonId:","");
+                }
             }
             //有小的优先查小的
             if(StringUtils.isNotEmpty(seasonId)){
@@ -109,6 +118,21 @@ public class FootballSeasonCategoryController extends BaseCrawlerController{
                 }
             }
             return HttpResult.ok(seasonCategory);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+    }
+
+    /**
+     * 根据赛季id获取赛季类别的级联数据
+     * @return
+     */
+    @GetMapping("/findSeasonCascaderItemBySeasonId")
+    public HttpResult findSeasonCascaderItemBySeasonId(@RequestParam String footballSeasonId){
+        try {
+            List<CascaderTreeItem> cascaderItemList = footballSeasonCategoryService.findSeasonCascaderItemBySeasonId(footballSeasonId);
+            return HttpResult.ok(cascaderItemList);
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.ys.common.constant.CoreMenuConstant;
+import org.ys.core.constant.CoreMenuConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
 import org.ys.common.util.PasswordUtils;

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
 import org.ys.crawler.dao.FootballSeasonCategoryMapper;
 import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballSeason;
@@ -148,5 +149,25 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
         example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
         return footballSeasonCategoryMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<CascaderTreeItem> findSeasonCascaderItemBySeasonId(String footballSeasonId) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonId)){
+            return null;
+        }
+        List<FootballSeasonCategory> categories = queryFootballSeasonCategoryBySeasonId(footballSeasonId);
+        List<CascaderTreeItem> treeItems = new ArrayList<CascaderTreeItem>();
+        if(null != categories && categories.size() > 0){
+            for (FootballSeasonCategory category : categories) {
+                CascaderTreeItem item = new CascaderTreeItem();
+                item.setId(category.getFootballSeasonCategoryId());
+                item.setName(StringUtils.trim(category.getFootballSeasonCategoryName()));
+                item.setParentId(category.getFootballSeasonId());
+                item.setChildren(new ArrayList<CascaderTreeItem>());
+                treeItems.add(item);
+            }
+        }
+        return treeItems;
     }
 }

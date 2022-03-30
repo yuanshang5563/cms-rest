@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.ys.common.constant.LeiDataCrawlerConstant;
 import org.ys.common.http.HttpResult;
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
 import org.ys.crawler.controller.vo.FootballSeasonCondition;
 import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballSeason;
@@ -110,11 +111,17 @@ public class FootballSeasonController extends BaseCrawlerController{
         try {
             String seasonName = seasonCondition.getFootballSeasonName();
             String leagueMatchId = seasonCondition.getLeagueMatchId();
+            String cascaderId = seasonCondition.getCascaderId();
             Date queryDate = seasonCondition.getQueryDate();
             FootballSeasonExample example = new FootballSeasonExample();
             FootballSeasonExample.Criteria criteria = example.createCriteria();
             if(StringUtils.isNotEmpty(seasonName)){
                 criteria.andFootballSeasonNameLike("%"+seasonName.trim()+"%");
+            }
+            if(StringUtils.isNotEmpty(cascaderId)){
+                if(cascaderId.contains("footballLeagueMatchId:")){
+                    leagueMatchId = cascaderId.replaceAll("footballLeagueMatchId:","");
+                }
             }
             if(StringUtils.isNotEmpty(leagueMatchId)){
                 criteria.andFootballLeagueMatchIdEqualTo(leagueMatchId.trim());
@@ -149,6 +156,21 @@ public class FootballSeasonController extends BaseCrawlerController{
                 }
             }
             return HttpResult.ok(footballSeason);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResult.error("程序出现异常");
+        }
+    }
+
+    /**
+     * 根据联赛id获取赛季的级联数据
+     * @return
+     */
+    @GetMapping("/findSeasonCascaderItemByLeagueMatchId")
+    public HttpResult findSeasonCascaderItemByLeagueMatchId(@RequestParam String footballLeagueMatchId){
+        try {
+            List<CascaderTreeItem> cascaderItemList = footballSeasonService.findSeasonCascaderItemByLeagueMatchId(footballLeagueMatchId);
+            return HttpResult.ok(cascaderItemList);
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

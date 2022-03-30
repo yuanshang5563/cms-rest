@@ -8,6 +8,7 @@ import java.util.Date;
  * 用于前后端传递比分数据查询参数的类
  */
 public class FootballScoreCondition extends BasecCondition {
+    private String cascaderId;
     private String footballLeagueMatchId;
     private String footballSeasonId;
     private String footballSeasonCategoryId;
@@ -52,5 +53,13 @@ public class FootballScoreCondition extends BasecCondition {
 
     public void setRound(String round) {
         this.round = round;
+    }
+
+    public String getCascaderId() {
+        return cascaderId;
+    }
+
+    public void setCascaderId(String cascaderId) {
+        this.cascaderId = cascaderId;
     }
 }

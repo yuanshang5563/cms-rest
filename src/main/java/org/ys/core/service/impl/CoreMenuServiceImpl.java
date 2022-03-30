@@ -4,7 +4,7 @@ import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.ys.common.constant.CoreMenuConstant;
+import org.ys.core.constant.CoreMenuConstant;
 import org.ys.common.page.PageBean;
 import org.ys.core.controller.vo.CoreMenuCondition;
 import org.ys.core.dao.CoreMenuMapper;

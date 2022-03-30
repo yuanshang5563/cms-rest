@@ -3,19 +3,25 @@ package org.ys.crawler.service.impl;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
+import org.ys.common.vo.CascaderTreeItem;
+import org.ys.crawler.constant.FootballLeagueMatchConstant;
 import org.ys.crawler.dao.FootballLeagueMatchMapper;
 import org.ys.crawler.model.FootballLeagueMatch;
 import org.ys.crawler.model.FootballLeagueMatchExample;
 import org.ys.crawler.service.FootballLeagueMatchService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("footballLeagueMatchService")
 public class FootballLeagueMatchServiceImpl implements FootballLeagueMatchService {
     @Autowired
     private FootballLeagueMatchMapper footballLeagueMatchMapper;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public FootballLeagueMatch queryFootballLeagueMatchById(String footballLeagueMatchId) throws Exception {
@@ -119,5 +125,26 @@ public class FootballLeagueMatchServiceImpl implements FootballLeagueMatchServic
         }else {
             return null;
         }
+    }
+
+    @Override
+    public List<CascaderTreeItem> findLeagueMatchCascaderItem() throws Exception {
+        //先从缓存中找
+        List<CascaderTreeItem> treeItems = (List<CascaderTreeItem>) redisTemplate.opsForList().leftPop(FootballLeagueMatchConstant.LEAGUE_MATCH_CASCADER_ITEM_REDIS);
+        if(null == treeItems || treeItems.size() <= 0){
+            List<FootballLeagueMatch> leagueMatches = queryAll();
+            treeItems = new ArrayList<CascaderTreeItem>();
+            if(null != leagueMatches && leagueMatches.size() > 0){
+                for (FootballLeagueMatch leagueMatch : leagueMatches) {
+                    CascaderTreeItem treeItem = new CascaderTreeItem();
+                    treeItem.setId(leagueMatch.getFootballLeagueMatchId());
+                    treeItem.setName(StringUtils.trim(leagueMatch.getFootballLeagueMatchName()));
+                    treeItem.setChildren(new ArrayList<CascaderTreeItem>());
+                    treeItems.add(treeItem);
+                }
+            }
+            redisTemplate.opsForList().leftPush(FootballLeagueMatchConstant.LEAGUE_MATCH_CASCADER_ITEM_REDIS,treeItems);
+        }
+        return treeItems;
     }
 }

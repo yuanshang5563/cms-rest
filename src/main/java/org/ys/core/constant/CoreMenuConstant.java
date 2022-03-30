@@ -1,4 +1,4 @@
-package org.ys.common.constant;
+package org.ys.core.constant;
 
 /**
  * 系统菜单或权限常量类
