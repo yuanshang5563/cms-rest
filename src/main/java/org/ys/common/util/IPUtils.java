@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
  * IP相关工具类
  */
 public class IPUtils {
+    private IPUtils(){}
 	private static Logger logger = LoggerFactory.getLogger(IPUtils.class);
 
 	/**

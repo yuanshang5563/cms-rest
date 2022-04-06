@@ -9,6 +9,7 @@ import java.io.IOException;
  * @date Oct 29, 2018
  */
 public class IOUtils {
+    private IOUtils(){}
 
 	/**
 	 * 关闭对象，连接

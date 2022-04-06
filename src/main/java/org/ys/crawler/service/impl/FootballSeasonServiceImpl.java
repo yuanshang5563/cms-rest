@@ -149,4 +149,62 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
         }
         return treeItems;
     }
+
+    @Override
+    public List<FootballSeason> queryLatestFootballSeasons() throws Exception {
+        //先找到所有联赛，再一个个找最新赛季
+        List<FootballLeagueMatch> leagueMatches = footballLeagueMatchService.queryAll();
+        if(null != leagueMatches && leagueMatches.size() > 0){
+            List<FootballSeason> latestSeasons = new ArrayList<FootballSeason>();
+            for (FootballLeagueMatch leagueMatch : leagueMatches) {
+                FootballSeasonExample example = new FootballSeasonExample();
+                example.createCriteria().andFootballLeagueMatchIdEqualTo(leagueMatch.getFootballLeagueMatchId());
+                example.setOrderByClause(" season_end_date desc");
+                List<FootballSeason> seasons = queryFootballSeasonsByExample(example);
+                if(null != seasons && seasons.size() > 0){
+                    latestSeasons.add(seasons.get(0));
+                }
+            }
+            return latestSeasons;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public List<String> queryLatestFootballSeasonIds() throws Exception {
+        //先找到所有联赛，再一个个找最新赛季
+        List<FootballLeagueMatch> leagueMatches = footballLeagueMatchService.queryAll();
+        if(null != leagueMatches && leagueMatches.size() > 0){
+            List<String> latestSeasonIds = new ArrayList<String>();
+            for (FootballLeagueMatch leagueMatch : leagueMatches) {
+                FootballSeasonExample example = new FootballSeasonExample();
+                example.createCriteria().andFootballLeagueMatchIdEqualTo(leagueMatch.getFootballLeagueMatchId());
+                example.setOrderByClause(" season_end_date desc");
+                List<FootballSeason> seasons = queryFootballSeasonsByExample(example);
+                if(null != seasons && seasons.size() > 0){
+                    latestSeasonIds.add(seasons.get(0).getFootballSeasonId());
+                }
+            }
+            return latestSeasonIds;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public FootballSeason queryLatestFootballSeasonByLeagueMatch(String footballLeagueMatchId) throws Exception {
+        if(StringUtils.isEmpty(footballLeagueMatchId)){
+            return null;
+        }
+        FootballSeasonExample example = new FootballSeasonExample();
+        example.createCriteria().andFootballLeagueMatchIdEqualTo(StringUtils.trim(footballLeagueMatchId));
+        example.setOrderByClause(" season_end_date desc");
+        List<FootballSeason> seasons = queryFootballSeasonsByExample(example);
+        if(null != seasons && seasons.size() > 0){
+            return seasons.get(0);
+        }else{
+            return null;
+        }
+    }
 }

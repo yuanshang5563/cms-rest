@@ -87,7 +87,7 @@ public class FootballTeamServiceImpl implements FootballTeamService {
             return null;
         }
         FootballTeamExample example = new FootballTeamExample();
-        FootballTeamExample.Criteria criteria = example.createCriteria().andEntityIdEqualTo(StringUtils.trim(entityId));
+        example.createCriteria().andEntityIdEqualTo(StringUtils.trim(entityId));
         List<FootballTeam> footballTeams = footballTeamMapper.selectByExample(example);
         if(null != footballTeams && footballTeams.size() > 0){
             return footballTeams.get(0);

@@ -94,4 +94,26 @@ public interface FootballSeasonService {
      * @throws Exception
      */
     public List<CascaderTreeItem> findSeasonCascaderItemByLeagueMatchId(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 获取最新赛季
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeason> queryLatestFootballSeasons() throws Exception;
+
+    /**
+     * 获取最新赛季的id集合
+     * @return
+     * @throws Exception
+     */
+    public List<String> queryLatestFootballSeasonIds() throws Exception;
+
+    /**
+     * 获取该联赛的最新赛季
+     * @param footballLeagueMatchId
+     * @return
+     * @throws Exception
+     */
+    public FootballSeason queryLatestFootballSeasonByLeagueMatch(String footballLeagueMatchId) throws Exception;
 }

@@ -62,10 +62,7 @@ public class FootballScorePageProcessor implements PageProcessor {
                             footballScore.setLeidataScoreId(leidataScoreId);
                             footballScore.setFootballSeasonId(seasonCategory.getFootballSeasonId());
                             footballScore.setFootballSeasonCategoryId(seasonCategory.getFootballSeasonCategoryId());
-                            FootballSeason footballSeason = footballSeasonService.queryFootballSeasonById(seasonCategory.getFootballSeasonId());
-                            if(null != footballSeason){
-                                footballScore.setFootballLeagueMatchId(footballSeason.getFootballLeagueMatchId());
-                            }
+                            footballScore.setFootballLeagueMatchId(seasonCategory.getFootballLeagueMatchId());
                         }
                         JsonNode roundNode = node.path("Round");
                         if(null != roundNode){
@@ -144,10 +141,10 @@ public class FootballScorePageProcessor implements PageProcessor {
                     team = new FootballTeam();
                     team.setTeamName(StringUtils.trim(teamName));
                     team.setFootballTeamId(UUIDGeneratorUtils.generateUUID());
-                    team.setCountry(StringUtils.trim(regionName));
                     team.setEntityId(StringUtils.trim(entityId));
-                    teamMap.put(teamName,team);
                 }
+                team.setCountry(StringUtils.trim(regionName));
+                teamMap.put(teamName,team);
             }
         } catch (Exception e) {
             e.printStackTrace();

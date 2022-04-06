@@ -34,6 +34,24 @@ public class BaseCrawlerController {
     }
 
     /**
+     * 获取积分爬取轮数控制
+     * @return
+     */
+    protected int getIntegralRoundCount(){
+        CoreParameter crawTIntegralRoundCountParam = null;
+        try {
+            crawTIntegralRoundCountParam = coreParameterService.queryCoreParameterByParamCode(CrawlerConstant.CRAW_INTEGRAL_ROUND_COUNT);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(null == crawTIntegralRoundCountParam || StringUtils.isEmpty(crawTIntegralRoundCountParam.getParamValue())){
+            return 1;
+        }else{
+            return Integer.parseInt(crawTIntegralRoundCountParam.getParamValue());
+        }
+    }
+
+    /**
      * 获取过滤器
      * @return
      */

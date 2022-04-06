@@ -2,40 +2,16 @@ package org.ys.crawler.controller.vo;
 
 import org.ys.common.vo.BasecCondition;
 
+import java.util.Date;
+
 /**
- * 用于前后端传递球队查询参数的类
+ * 用于前后端传递积分数据查询参数的类
  */
-public class FootballTeamCondition extends BasecCondition {
+public class FootballIntegralCondition extends BasecCondition {
     private String cascaderId;
     private String footballLeagueMatchId;
     private String footballSeasonId;
     private String footballSeasonCategoryId;
-    private String teamName;
-    private String country;
-
-    public String getTeamName() {
-        return teamName;
-    }
-
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCascaderId() {
-        return cascaderId;
-    }
-
-    public void setCascaderId(String cascaderId) {
-        this.cascaderId = cascaderId;
-    }
 
     public String getFootballLeagueMatchId() {
         return footballLeagueMatchId;
@@ -59,5 +35,13 @@ public class FootballTeamCondition extends BasecCondition {
 
     public void setFootballSeasonCategoryId(String footballSeasonCategoryId) {
         this.footballSeasonCategoryId = footballSeasonCategoryId;
+    }
+
+    public String getCascaderId() {
+        return cascaderId;
+    }
+
+    public void setCascaderId(String cascaderId) {
+        this.cascaderId = cascaderId;
     }
 }

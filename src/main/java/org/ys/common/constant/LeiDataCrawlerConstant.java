@@ -82,4 +82,14 @@ public class LeiDataCrawlerConstant {
      * 雷达体育赛季比分详情总爬虫别称
      */
     public static final String LEIDATA_CRAWLER_SCORE_DETAIL_TYPE = "scoreDetailCraw";
+
+    /**
+     * 雷达体育积分总爬虫别称
+     */
+    public static final String LEIDATA_CRAWLER_INTEGRAL_TYPE = "integralCraw";
+
+    /**
+     * 雷达体育积分url的中间词
+     */
+    public static final String LEIDATA_CRAWLER_INTEGRAL_MIDDLE_WORD = "GetLeagueTableByCompetitionId";
 }

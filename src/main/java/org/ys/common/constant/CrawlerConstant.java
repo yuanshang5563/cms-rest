@@ -17,6 +17,11 @@ public class CrawlerConstant {
 	public static final String CRAW_THREAD_COUNT = "crawler_thread_count";
 
 	/**
+	 * 积分爬取轮数控制
+	 */
+	public static final String CRAW_INTEGRAL_ROUND_COUNT = "crawler_integral_round_count";
+
+	/**
 	 *要获取多少个最近赛季的详情数据参数
 	 */
 	public static final String CRAW_DETAIL_SEASON_COUNT = "crawler_detail_season_count";
