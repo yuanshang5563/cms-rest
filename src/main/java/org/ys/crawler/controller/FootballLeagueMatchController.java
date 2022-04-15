@@ -43,10 +43,9 @@ public class FootballLeagueMatchController extends BaseCrawlerController{
     public HttpResult startLeagueMatchCrawler(){
         Spider spider = null;
         try {
-            QueueScheduler scheduler = new QueueScheduler();
-            scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
+            QueueScheduler scheduler = getQueueScheduler();
             Request request = new Request(LeiDataCrawlerConstant.LEIDATA_CRAWLER_STATS_URL);
-            spider = Spider.create(leagueMatchPageProcessor);
+            spider = Spider.create(leagueMatchPageProcessor).setScheduler(scheduler);;
             spider.setDownloader(footballLeagueMatchDownloader);
             spider.addPipeline(footballLeagueMatchPipeline);
             spider.addRequest(request);
@@ -93,7 +92,7 @@ public class FootballLeagueMatchController extends BaseCrawlerController{
     @GetMapping("/find")
     public HttpResult find(@RequestParam String footballLeagueMatchId){
         if(StringUtils.isEmpty(footballLeagueMatchId)){
-            return HttpResult.ok();
+            return HttpResult.error("参数为空!");
         }
         try {
             FootballLeagueMatch footballLeagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballLeagueMatchId.trim());
@@ -104,18 +103,4 @@ public class FootballLeagueMatchController extends BaseCrawlerController{
         }
     }
 
-    /**
-     * 获取联赛的级联数据
-     * @return
-     */
-    @GetMapping("/findLeagueMatchCascaderItem")
-    public HttpResult findLeagueMatchCascaderItem(){
-        try {
-            List<CascaderTreeItem> cascaderItemList = footballLeagueMatchService.findLeagueMatchCascaderItem();
-            return HttpResult.ok(cascaderItemList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return HttpResult.error("程序出现异常");
-        }
-    }
 }

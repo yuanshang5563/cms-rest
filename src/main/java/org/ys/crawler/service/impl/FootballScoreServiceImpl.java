@@ -25,6 +25,8 @@ public class FootballScoreServiceImpl implements FootballScoreService {
     @Autowired
     private FootballSeasonCategoryService footballSeasonCategoryService;
     @Autowired
+    private FootballIntegralService footballIntegralService;
+    @Autowired
     private FootballScoreMapper footballScoreMapper;
 
     @Override
@@ -33,6 +35,38 @@ public class FootballScoreServiceImpl implements FootballScoreService {
             return null;
         }
         return footballScoreMapper.selectByPrimaryKey(footballScoreId);
+    }
+
+    @Override
+    public FootballScore queryFootballScoreOfFullFieldById(String footballScoreId) throws Exception {
+        if (StringUtils.isEmpty(footballScoreId)){
+            return null;
+        }
+        FootballScore footballScore = queryFootballScoreById(footballScoreId);
+        if(null != footballScore){
+            FootballTeam homeTeam = footballTeamService.queryFootballTeamById(footballScore.getHomeFootballTeamId());
+            if(null != homeTeam){
+                footballScore.setHomeFootballTeamName(homeTeam.getTeamName());
+            }
+            FootballTeam awayTeam = footballTeamService.queryFootballTeamById(footballScore.getAwayFootballTeamId());
+            if(null != awayTeam){
+                footballScore.setAwayFootballTeamName(awayTeam.getTeamName());
+            }
+            //填充联赛，赛季，类别的名称
+            FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballScore.getFootballLeagueMatchId());
+            if(null != leagueMatch){
+                footballScore.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+            }
+            FootballSeason season = footballSeasonService.queryFootballSeasonById(footballScore.getFootballSeasonId());
+            if(null != season){
+                footballScore.setFootballSeasonName(season.getFootballSeasonName());
+            }
+            FootballSeasonCategory seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(footballScore.getFootballSeasonCategoryId());
+            if(null != seasonCategory){
+                footballScore.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
+            }
+        }
+        return footballScore;
     }
 
     @Override
@@ -88,66 +122,7 @@ public class FootballScoreServiceImpl implements FootballScoreService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballScore> footballScores = footballScoreMapper.selectByExample(example);
-        if(null != footballScores && footballScores.size() > 0){
-            Map<String,FootballTeam> teamMap = new HashMap<String,FootballTeam>();
-            Map<String,FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
-            Map<String,FootballSeason> seasonMap = new HashMap<String,FootballSeason>();
-            Map<String,FootballSeasonCategory> categoryMap = new HashMap<String,FootballSeasonCategory>();
-            for (FootballScore score : footballScores) {
-                //先填队名
-                FootballTeam homeTeam = teamMap.get(score.getHomeFootballTeamId());
-                if(null == homeTeam){
-                    homeTeam = footballTeamService.queryFootballTeamById(score.getHomeFootballTeamId());
-                    if(null != homeTeam){
-                        teamMap.put(homeTeam.getFootballTeamId(),homeTeam);
-                    }
-                }
-                if(null != homeTeam){
-                    score.setHomeFootballTeamName(homeTeam.getTeamName());
-                }
-                FootballTeam awayTeam = teamMap.get(score.getAwayFootballTeamId());
-                if(null == awayTeam){
-                    awayTeam = footballTeamService.queryFootballTeamById(score.getAwayFootballTeamId());
-                    if(null != awayTeam){
-                        teamMap.put(awayTeam.getFootballTeamId(),awayTeam);
-                    }
-                }
-                if(null != awayTeam){
-                    score.setAwayFootballTeamName(awayTeam.getTeamName());
-                }
-                //填充联赛，赛季，类别的名称
-                FootballLeagueMatch leagueMatch = leagueMatchMap.get(score.getFootballLeagueMatchId());
-                if(null == leagueMatch){
-                    leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(score.getFootballLeagueMatchId());
-                    if(null != leagueMatch){
-                        leagueMatchMap.put(score.getFootballLeagueMatchId(),leagueMatch);
-                    }
-                }
-                if(null != leagueMatch){
-                    score.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
-                }
-                FootballSeason season = seasonMap.get(score.getFootballSeasonId());
-                if(null == season){
-                    season = footballSeasonService.queryFootballSeasonById(score.getFootballSeasonId());
-                    if(null != season){
-                        seasonMap.put(score.getFootballSeasonId(),season);
-                    }
-                }
-                if(null != season){
-                    score.setFootballSeasonName(season.getFootballSeasonName());
-                }
-                FootballSeasonCategory seasonCategory = categoryMap.get(score.getFootballSeasonCategoryId());
-                if(null == seasonCategory){
-                    seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(score.getFootballSeasonCategoryId());
-                    if(null != seasonCategory){
-                        categoryMap.put(score.getFootballSeasonCategoryId(),seasonCategory);
-                    }
-                }
-                if(null != seasonCategory){
-                    score.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
-                }
-            }
-        }
+        fillFootballScores(footballScores);
         return new PageBean<FootballScore>(footballScores);
     }
 
@@ -209,20 +184,149 @@ public class FootballScoreServiceImpl implements FootballScoreService {
     }
 
     @Override
-    public boolean isExistsScoreByCategoryId(Set<String> categoryIds, String footballSeasonCategoryId) throws Exception {
-        if(StringUtils.isEmpty(footballSeasonCategoryId) || null == categoryIds){
+    public List<FootballScore> queryFootballScoresBySeasonCategoryIdAndRound(String footballSeasonCategoryId, int round) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonCategoryId) || round == 0){
+            return null;
+        }
+        FootballScoreExample example = new FootballScoreExample();
+        example.createCriteria().andFootballSeasonCategoryIdEqualTo(StringUtils.trim(footballSeasonCategoryId))
+        .andRoundEqualTo(Integer.toString(round));
+        return footballScoreMapper.selectByExample(example);
+    }
+
+    @Override
+    public boolean judgeScoresByCategory(FootballSeasonCategory footballSeasonCategory) throws Exception {
+        if(null == footballSeasonCategory){
             return false;
         }
-        boolean containsFlag = categoryIds.contains(footballSeasonCategoryId);
-        if(containsFlag){
-            return true;
-        }else{
-            List<FootballScore> scores = queryFootballScoresBySeasonCategoryId(footballSeasonCategoryId);
-            if(null != scores && scores.size() > 0){
-                categoryIds.add(footballSeasonCategoryId);
+        int roundCount = footballSeasonCategory.getRoundCount();
+        if(roundCount > 0){
+            int scoreRoundCount = footballIntegralService.queryRoundScoreCountBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
+            if(scoreRoundCount == 0){
+                return false;
+            }
+            List<FootballScore> footballScores = queryFootballScoresBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
+            if(null != footballScores && footballScores.size() > 0 && (footballScores.size() == scoreRoundCount*roundCount)){
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean judgeScoresByCategoryAndRound(FootballSeasonCategory footballSeasonCategory, int round) throws Exception {
+        if(null == footballSeasonCategory || round == 0){
+            return false;
+        }
+        int roundCount = footballSeasonCategory.getRoundCount();
+        if(roundCount > 0){
+            int scoreRoundCount = footballIntegralService.queryRoundScoreCountBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
+            if(scoreRoundCount == 0){
+                return false;
+            }
+            List<FootballScore> footballScores = queryFootballScoresBySeasonCategoryIdAndRound(footballSeasonCategory.getFootballSeasonCategoryId(),round);
+            if(null != footballScores && footballScores.size() > 0 && (footballScores.size() == scoreRoundCount)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int getScoreSumByScore(FootballScore footballScore) {
+        if(null == footballScore){
+            return 0;
+        }
+        int homeScore = 0;
+        if(null != footballScore.getHomeScore()){
+            homeScore = footballScore.getHomeScore().intValue();
+        }
+        int awayScore = 0;
+        if(null != footballScore.getAwayScore()){
+            awayScore = footballScore.getAwayScore().intValue();
+        }
+        int scoreCount = homeScore + awayScore;
+        return  scoreCount;
+    }
+
+    @Override
+    public int getScoreSumByByCategory(FootballSeasonCategory footballSeasonCategory) throws Exception {
+        if(null == footballSeasonCategory){
+            return 0;
+        }
+        List<FootballScore> footballScores = queryFootballScoresBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
+        if(null == footballScores || footballScores.size() <= 0){
+            return 0;
+        }
+        int scoreSum = 0;
+        for (FootballScore footballScore : footballScores) {
+            scoreSum = scoreSum + getScoreSumByScore(footballScore);
+        }
+        return scoreSum;
+    }
+
+    @Override
+    public List<FootballScore> fillFootballScores(List<FootballScore> footballScores) throws Exception {
+        if(null != footballScores && footballScores.size() > 0){
+            Map<String, FootballTeam> teamMap = new HashMap<String,FootballTeam>();
+            Map<String, FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
+            Map<String, FootballSeason> seasonMap = new HashMap<String,FootballSeason>();
+            Map<String, FootballSeasonCategory> categoryMap = new HashMap<String,FootballSeasonCategory>();
+            for (FootballScore score : footballScores) {
+                //先填队名
+                FootballTeam homeTeam = teamMap.get(score.getHomeFootballTeamId());
+                if(null == homeTeam){
+                    homeTeam = footballTeamService.queryFootballTeamById(score.getHomeFootballTeamId());
+                    if(null != homeTeam){
+                        teamMap.put(homeTeam.getFootballTeamId(),homeTeam);
+                    }
+                }
+                if(null != homeTeam){
+                    score.setHomeFootballTeamName(homeTeam.getTeamName());
+                }
+                FootballTeam awayTeam = teamMap.get(score.getAwayFootballTeamId());
+                if(null == awayTeam){
+                    awayTeam = footballTeamService.queryFootballTeamById(score.getAwayFootballTeamId());
+                    if(null != awayTeam){
+                        teamMap.put(awayTeam.getFootballTeamId(),awayTeam);
+                    }
+                }
+                if(null != awayTeam){
+                    score.setAwayFootballTeamName(awayTeam.getTeamName());
+                }
+                //填充联赛，赛季，类别的名称
+                FootballLeagueMatch leagueMatch = leagueMatchMap.get(score.getFootballLeagueMatchId());
+                if(null == leagueMatch){
+                    leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(score.getFootballLeagueMatchId());
+                    if(null != leagueMatch){
+                        leagueMatchMap.put(score.getFootballLeagueMatchId(),leagueMatch);
+                    }
+                }
+                if(null != leagueMatch){
+                    score.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+                }
+                FootballSeason season = seasonMap.get(score.getFootballSeasonId());
+                if(null == season){
+                    season = footballSeasonService.queryFootballSeasonById(score.getFootballSeasonId());
+                    if(null != season){
+                        seasonMap.put(score.getFootballSeasonId(),season);
+                    }
+                }
+                if(null != season){
+                    score.setFootballSeasonName(season.getFootballSeasonName());
+                }
+                FootballSeasonCategory seasonCategory = categoryMap.get(score.getFootballSeasonCategoryId());
+                if(null == seasonCategory){
+                    seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(score.getFootballSeasonCategoryId());
+                    if(null != seasonCategory){
+                        categoryMap.put(score.getFootballSeasonCategoryId(),seasonCategory);
+                    }
+                }
+                if(null != seasonCategory){
+                    score.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
+                }
+            }
+        }
+        return footballScores;
     }
 }

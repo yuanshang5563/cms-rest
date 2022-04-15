@@ -16,6 +16,14 @@ public interface FootballIntegralService {
     public FootballIntegral queryFootballIntegralById(String footballIntegralId) throws Exception;
 
     /**
+     * 根据Id获取全部属性(包括非数据库属性)积分数据
+     * @param footballIntegralId
+     * @return
+     * @throws Exception
+     */
+    public FootballIntegral queryFootballIntegralOfFullFieldById(String footballIntegralId) throws Exception;
+
+    /**
      * 保存
      * @param footballIntegral
      * @throws Exception
@@ -133,4 +141,12 @@ public interface FootballIntegralService {
      * @throws Exception
      */
     public List<FootballTeam> queryFootballTeamsByLeagueMatchId(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 根据赛季类别id获取该类别比赛每轮应赛场数
+     * @param footballSeasonCategoryId
+     * @return
+     * @throws Exception
+     */
+    public int queryRoundScoreCountBySeasonCategoryId(String footballSeasonCategoryId) throws Exception;
 }

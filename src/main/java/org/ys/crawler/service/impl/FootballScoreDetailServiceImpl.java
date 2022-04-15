@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ys.common.page.PageBean;
 import org.ys.crawler.dao.FootballScoreDetailMapper;
-import org.ys.crawler.model.FootballPlayer;
-import org.ys.crawler.model.FootballScoreDetail;
-import org.ys.crawler.model.FootballScoreDetailExample;
-import org.ys.crawler.model.FootballTeam;
+import org.ys.crawler.model.*;
 import org.ys.crawler.service.FootballPlayerService;
 import org.ys.crawler.service.FootballScoreDetailService;
+import org.ys.crawler.service.FootballScoreService;
 import org.ys.crawler.service.FootballTeamService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,8 @@ import java.util.Map;
 public class FootballScoreDetailServiceImpl implements FootballScoreDetailService {
     @Autowired
     private FootballScoreDetailMapper footballScoreDetailMapper;
+    @Autowired
+    private FootballScoreService footballScoreService;
     @Autowired
     private FootballTeamService footballTeamService;
     @Autowired
@@ -33,6 +34,25 @@ public class FootballScoreDetailServiceImpl implements FootballScoreDetailServic
             return null;
         }
         return footballScoreDetailMapper.selectByPrimaryKey(footballScoreDetailId);
+    }
+
+    @Override
+    public FootballScoreDetail queryFootballScoreDetailOfFullFieldById(String footballScoreDetailId) throws Exception {
+        if (StringUtils.isEmpty(footballScoreDetailId)){
+            return null;
+        }
+        FootballScoreDetail detail = queryFootballScoreDetailById(footballScoreDetailId);
+        if(null != detail){
+            FootballTeam team = footballTeamService.queryFootballTeamById(detail.getGoalFootballTeamId());
+            if(null != team){
+                detail.setTeamName(team.getTeamName());
+            }
+            FootballPlayer player = footballPlayerService.queryFootballPlayerById(detail.getFootballPlayerId());
+            if(null != player){
+                detail.setFootballPlayerName(player.getFootballPlayerName());
+            }
+        }
+        return detail;
     }
 
     @Override
@@ -145,5 +165,56 @@ public class FootballScoreDetailServiceImpl implements FootballScoreDetailServic
         FootballScoreDetailExample example = new FootballScoreDetailExample();
         example.createCriteria().andLeidataScoreIdEqualTo(StringUtils.trim(leidataScoreId));
         return footballScoreDetailMapper.selectByExample(example);
+    }
+
+    @Override
+    public boolean judgeDetailsByScore(FootballScore footballScore) throws Exception {
+        if(null == footballScore){
+            return false;
+        }
+        int scoreSum = footballScoreService.getScoreSumByScore(footballScore);
+        if(scoreSum == 0){
+            return false;
+        }
+        List<FootballScoreDetail> existsScoreDetails = queryFootballScoreDetailsByScoreId(footballScore.getFootballScoreId());
+        if(null != existsScoreDetails && existsScoreDetails.size() > 0){
+            //如果已存在正确的详情数据,数据正确就不再继续请求了
+            if(existsScoreDetails.size() == scoreSum){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean judgeDetailsByCategory(FootballSeasonCategory footballSeasonCategory) throws Exception {
+        if(null == footballSeasonCategory){
+            return false;
+        }
+        //先判断比分数据是不是正确
+        boolean scoreFlag = footballScoreService.judgeScoresByCategory(footballSeasonCategory);
+        if(scoreFlag){
+            //先获取所有类别的总分
+            int scoreSum = footballScoreService.getScoreSumByByCategory(footballSeasonCategory);
+            if(scoreSum == 0){
+                return false;
+            }
+            //判断总分是不和详情数量相等
+            List<FootballScore> footballScores = footballScoreService.queryFootballScoresBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
+            if(null == footballScores || footballScores.size() == 0){
+                return false;
+            }
+            List<String> scoreIds = new ArrayList<String>();
+            for (FootballScore footballScore : footballScores) {
+                scoreIds.add(footballScore.getFootballScoreId());
+            }
+            FootballScoreDetailExample example = new FootballScoreDetailExample();
+            example.createCriteria().andFootballScoreIdIn(scoreIds);
+            List<FootballScoreDetail> scoreDetails = queryFootballScoreDetailsByExample(example);
+            if(null != scoreDetails && scoreDetails.size() > 0 && (scoreDetails.size() == scoreSum)){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -37,6 +37,26 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
     }
 
     @Override
+    public FootballSeasonCategory queryFootballSeasonCategoryOfFullFieldById(String footballSeasonCategoryId) throws Exception {
+        if (StringUtils.isEmpty(footballSeasonCategoryId)){
+            return null;
+        }
+        FootballSeasonCategory seasonCategory = queryFootballSeasonCategoryById(footballSeasonCategoryId);
+        if(null != seasonCategory){
+            FootballSeason season = footballSeasonService.queryFootballSeasonById(seasonCategory.getFootballSeasonId());
+            if(null != season){
+                seasonCategory.setFootballSeasonName(season.getFootballSeasonName());
+                String leagueMatchId = season.getFootballLeagueMatchId();
+                FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(leagueMatchId);
+                if(null != leagueMatch){
+                    seasonCategory.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+                }
+            }
+        }
+        return seasonCategory;
+    }
+
+    @Override
     public int save(FootballSeasonCategory footballSeasonCategory) throws Exception {
         if(null != footballSeasonCategory){
             return footballSeasonCategoryMapper.insert(footballSeasonCategory);
@@ -148,6 +168,16 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         }
         FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
         example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
+        return footballSeasonCategoryMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<FootballSeasonCategory> queryFootballSeasonCategoryBySeasonIds(List<String> footballSeasonIds) throws Exception {
+        if(null == footballSeasonIds || footballSeasonIds.size() == 0){
+            return null;
+        }
+        FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
+        example.createCriteria().andFootballSeasonIdIn(footballSeasonIds);
         return footballSeasonCategoryMapper.selectByExample(example);
     }
 

@@ -25,4 +25,9 @@ public class CrawlerConstant {
 	 *要获取多少个最近赛季的详情数据参数
 	 */
 	public static final String CRAW_DETAIL_SEASON_COUNT = "crawler_detail_season_count";
+
+	/**
+	 * 是否重新爬取，已爬取的数据
+	 */
+	public static final String CRAW_AGAIN_FLAG = "crawler_again_flag";
 }

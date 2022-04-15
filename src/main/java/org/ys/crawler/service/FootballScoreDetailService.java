@@ -1,8 +1,10 @@
 package org.ys.crawler.service;
 
 import org.ys.common.page.PageBean;
+import org.ys.crawler.model.FootballScore;
 import org.ys.crawler.model.FootballScoreDetail;
 import org.ys.crawler.model.FootballScoreDetailExample;
+import org.ys.crawler.model.FootballSeasonCategory;
 
 import java.util.List;
 
@@ -14,6 +16,14 @@ public interface FootballScoreDetailService {
      * @throws Exception
      */
     public FootballScoreDetail queryFootballScoreDetailById(String footballScoreDetailId) throws Exception;
+
+    /**
+     * 根据Id获取全部属性(包括非数据库属性)
+     * @param footballScoreDetailId
+     * @return
+     * @throws Exception
+     */
+    public FootballScoreDetail queryFootballScoreDetailOfFullFieldById(String footballScoreDetailId) throws Exception;
 
     /**
      * 保存
@@ -92,4 +102,20 @@ public interface FootballScoreDetailService {
      * @throws Exception
      */
     public List<FootballScoreDetail> queryFootballScoreDetailsByLeiDataId(String leidataScoreId) throws Exception;
+
+    /**
+     * 根据score判断详情是不是正确
+     * @param footballScore
+     * @return
+     * @throws Exception
+     */
+    public boolean judgeDetailsByScore(FootballScore footballScore) throws Exception;
+
+    /**
+     * 判断该赛季类别是否已经存在正确数量的比分详情数据
+     * @param footballSeasonCategory
+     * @return
+     * @throws Exception
+     */
+    public boolean judgeDetailsByCategory(FootballSeasonCategory footballSeasonCategory) throws Exception;
 }

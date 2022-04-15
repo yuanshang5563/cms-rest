@@ -34,6 +34,21 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
     }
 
     @Override
+    public FootballSeason queryFootballSeasonOfFullFieldById(String footballSeasonId) throws Exception {
+        if (StringUtils.isEmpty(footballSeasonId)){
+            return null;
+        }
+        FootballSeason season = queryFootballSeasonById(footballSeasonId);
+        if(null != season){
+            FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(season.getFootballLeagueMatchId());
+            if(null != leagueMatch){
+                season.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+            }
+        }
+        return season;
+    }
+
+    @Override
     public int save(FootballSeason footballSeason) throws Exception {
         if(null != footballSeason){
             return footballSeasonMapper.insert(footballSeason);

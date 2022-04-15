@@ -17,6 +17,14 @@ public interface FootballSeasonCategoryService {
     public FootballSeasonCategory queryFootballSeasonCategoryById(String footballSeasonCategoryId) throws Exception;
 
     /**
+     * 根据Id获取全部属性(包括非数据库属性)
+     * @param footballSeasonCategoryId
+     * @return
+     * @throws Exception
+     */
+    public FootballSeasonCategory queryFootballSeasonCategoryOfFullFieldById(String footballSeasonCategoryId) throws Exception;
+
+    /**
      * 保存
      * @param footballSeasonCategory
      * @throws Exception
@@ -94,6 +102,14 @@ public interface FootballSeasonCategoryService {
      * @throws Exception
      */
     public List<FootballSeasonCategory> queryFootballSeasonCategoryBySeasonId(String footballSeasonId) throws Exception;
+
+    /**
+     * 根据赛季Id集合查询该赛季下属的赛季类别
+     * @param footballSeasonIds
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeasonCategory> queryFootballSeasonCategoryBySeasonIds(List<String> footballSeasonIds) throws Exception;
 
     /**
      * 根据赛季id获取赛季的级联数据

@@ -61,13 +61,7 @@ public class FootballSeasonController extends BaseCrawlerController{
             }
         }
         if(requests.size() > 0){
-            QueueScheduler scheduler = new QueueScheduler();
-            scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
-            Spider spider = Spider.create(footballSeasonPageProcessor).setScheduler(scheduler);
-            spider.addPipeline(footballSeasonPipeline);
-            spider.startRequest(requests);
-            spider.thread(getThreadCount());
-            spider.start();
+            getSpider(requests,footballSeasonPageProcessor,footballSeasonPipeline);
             return HttpResult.ok("赛季爬虫启动成功！");
         }else{
             return HttpResult.error("赛季爬虫启动失败！");
@@ -90,11 +84,9 @@ public class FootballSeasonController extends BaseCrawlerController{
             String url = LeiDataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl;
             Request request = new Request(url);
             request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_LEAGUE_MATCH_ID,leagueMatch.getFootballLeagueMatchId());
-            Spider spider = Spider.create(footballSeasonPageProcessor);
-            spider.addPipeline(footballSeasonPipeline);
-            spider.addRequest(request);
-            spider.thread(getThreadCount());
-            spider.start();
+            List<Request> requests = new ArrayList<Request>();
+            requests.add(request);
+            getSpider(requests,footballSeasonPageProcessor,footballSeasonPipeline);
             return HttpResult.ok(leagueMatch.getFootballLeagueMatchName()+"赛季爬虫启动成功！");
         }else{
             return HttpResult.error("赛季爬虫启动失败！");
@@ -145,32 +137,11 @@ public class FootballSeasonController extends BaseCrawlerController{
     @GetMapping("/find")
     public HttpResult find(@RequestParam String footballSeasonId){
         if(StringUtils.isEmpty(footballSeasonId)){
-            return HttpResult.ok();
+            return HttpResult.error("参数为空!");
         }
         try {
-            FootballSeason footballSeason = footballSeasonService.queryFootballSeasonById(footballSeasonId.trim());
-            if(null != footballSeason){
-                FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballSeason.getFootballLeagueMatchId());
-                if(null != leagueMatch){
-                    footballSeason.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
-                }
-            }
+            FootballSeason footballSeason = footballSeasonService.queryFootballSeasonOfFullFieldById(footballSeasonId.trim());
             return HttpResult.ok(footballSeason);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return HttpResult.error("程序出现异常");
-        }
-    }
-
-    /**
-     * 根据联赛id获取赛季的级联数据
-     * @return
-     */
-    @GetMapping("/findSeasonCascaderItemByLeagueMatchId")
-    public HttpResult findSeasonCascaderItemByLeagueMatchId(@RequestParam String footballLeagueMatchId){
-        try {
-            List<CascaderTreeItem> cascaderItemList = footballSeasonService.findSeasonCascaderItemByLeagueMatchId(footballLeagueMatchId);
-            return HttpResult.ok(cascaderItemList);
         } catch (Exception e) {
             e.printStackTrace();
             return HttpResult.error("程序出现异常");

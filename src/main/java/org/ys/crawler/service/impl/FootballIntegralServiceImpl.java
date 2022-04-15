@@ -33,6 +33,34 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
     }
 
     @Override
+    public FootballIntegral queryFootballIntegralOfFullFieldById(String footballIntegralId) throws Exception {
+        if (StringUtils.isEmpty(footballIntegralId)){
+            return null;
+        }
+        FootballIntegral footballIntegral = queryFootballIntegralById(footballIntegralId);
+        if(null != footballIntegral){
+            FootballTeam team = footballTeamService.queryFootballTeamById(footballIntegral.getFootballTeamId());
+            if(null != team){
+                footballIntegral.setTeamName(team.getTeamName());
+            }
+            //填充联赛，赛季，类别的名称
+            FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballIntegral.getFootballLeagueMatchId());
+            if(null != leagueMatch){
+                footballIntegral.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
+            }
+            FootballSeason season = footballSeasonService.queryFootballSeasonById(footballIntegral.getFootballSeasonId());
+            if(null != season){
+                footballIntegral.setFootballSeasonName(season.getFootballSeasonName());
+            }
+            FootballSeasonCategory seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(footballIntegral.getFootballSeasonCategoryId());
+            if(null != seasonCategory){
+                footballIntegral.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
+            }
+        }
+        return footballIntegral;
+    }
+
+    @Override
     public int save(FootballIntegral footballIntegral) throws Exception {
         if(null != footballIntegral){
             return footballIntegralMapper.insert(footballIntegral);
@@ -219,6 +247,25 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
     public List<FootballTeam> queryFootballTeamsByLeagueMatchId(String footballLeagueMatchId) throws Exception {
         List<FootballIntegral> integrals = queryFootballIntegralsByLeagueMatchId(footballLeagueMatchId);
         return getFootballTeams(integrals);
+    }
+
+    @Override
+    public int queryRoundScoreCountBySeasonCategoryId(String footballSeasonCategoryId) throws Exception {
+        if(StringUtils.isEmpty(footballSeasonCategoryId)){
+            return 0;
+        }
+        List<FootballIntegral> footballIntegrals = queryFootballIntegralsBySeasonCategoryId(footballSeasonCategoryId);
+        if(null == footballIntegrals || footballIntegrals.size() <= 0){
+            return 0;
+        }
+        int integralCount = footballIntegrals.size();
+        //如果是偶数，判断数目是否正确
+        if(integralCount % 2 == 0){
+            int count = integralCount / 2;
+            return count;
+        }else{
+            return 0;
+        }
     }
 
     private List<FootballTeam> getFootballTeams(List<FootballIntegral> integrals) throws Exception {

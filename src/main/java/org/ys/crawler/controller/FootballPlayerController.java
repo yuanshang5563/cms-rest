@@ -76,7 +76,7 @@ public class FootballPlayerController {
     @GetMapping("/find")
     public HttpResult find(@RequestParam String footballPlayerId){
         if(StringUtils.isEmpty(footballPlayerId)){
-            return HttpResult.ok();
+            return HttpResult.error("参数为空!");
         }
         try {
             FootballPlayer footballPlayer = footballPlayerService.queryFootballPlayerById(footballPlayerId.trim());

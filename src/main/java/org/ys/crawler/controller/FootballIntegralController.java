@@ -89,29 +89,10 @@ public class FootballIntegralController extends BaseCrawlerController{
     @GetMapping("/find")
     public HttpResult find(@RequestParam String footballIntegralId){
         if(StringUtils.isEmpty(footballIntegralId)){
-            return HttpResult.ok();
+            return HttpResult.error("参数为空!");
         }
         try {
-            FootballIntegral footballIntegral = footballIntegralService.queryFootballIntegralById(footballIntegralId.trim());
-            if(null != footballIntegral){
-                FootballTeam team = footballTeamService.queryFootballTeamById(footballIntegral.getFootballTeamId());
-                if(null != team){
-                    footballIntegral.setTeamName(team.getTeamName());
-                }
-                //填充联赛，赛季，类别的名称
-                FootballLeagueMatch leagueMatch = footballLeagueMatchService.queryFootballLeagueMatchById(footballIntegral.getFootballLeagueMatchId());
-                if(null != leagueMatch){
-                    footballIntegral.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
-                }
-                FootballSeason season = footballSeasonService.queryFootballSeasonById(footballIntegral.getFootballSeasonId());
-                if(null != season){
-                    footballIntegral.setFootballSeasonName(season.getFootballSeasonName());
-                }
-                FootballSeasonCategory seasonCategory = footballSeasonCategoryService.queryFootballSeasonCategoryById(footballIntegral.getFootballSeasonCategoryId());
-                if(null != seasonCategory){
-                    footballIntegral.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
-                }
-            }
+            FootballIntegral footballIntegral = footballIntegralService.queryFootballIntegralOfFullFieldById(footballIntegralId.trim());
             return HttpResult.ok(footballIntegral);
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +122,7 @@ public class FootballIntegralController extends BaseCrawlerController{
                     requests.addAll(requestList);
                 }
             }
-            spider = getSpider(requests);
+            spider = getSpider(requests,footballIntegralPageProcessor,footballIntegralPipeline);
         }
         if(null != spider){
             return HttpResult.ok("积分爬虫启动成功！");
@@ -169,7 +150,7 @@ public class FootballIntegralController extends BaseCrawlerController{
                 }
             }
             List<Request> requests = getRequestsByLeagueMatch(leagueMatch,null);
-            spider = getSpider(requests);
+            spider = getSpider(requests,footballIntegralPageProcessor,footballIntegralPipeline);
         }
         if(null != spider){
             return HttpResult.ok("本赛季积分爬虫启动成功！");
@@ -198,7 +179,7 @@ public class FootballIntegralController extends BaseCrawlerController{
                         requests.addAll(requestList);
                     }
                 }
-                spider = getSpider(requests);
+                spider = getSpider(requests,footballIntegralPageProcessor,footballIntegralPipeline);
             }
         }
         if(null != spider){
@@ -225,7 +206,6 @@ public class FootballIntegralController extends BaseCrawlerController{
             String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeiDataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
                     , LeiDataCrawlerConstant.LEIDATA_CRAWLER_INTEGRAL_MIDDLE_WORD);
             Set<String> categoryIds = new HashSet<String>();
-            Set<String> latestSeasonIds = new HashSet<String>();
             for (FootballSeasonCategory category : seasonCategories) {
                 //如果轮数不大于1轮，没有积分数据
                 if(category.getRoundCount() <= getIntegralRoundCount()){
@@ -295,23 +275,5 @@ public class FootballIntegralController extends BaseCrawlerController{
                 requests.add(request);
             }
         }
-    }
-
-    /**
-     * 根据request启动爬虫
-     * @param requests
-     * @return
-     */
-    private Spider getSpider(List<Request> requests) {
-        Spider spider = null;
-        if(null != requests && requests.size() > 0){
-            QueueScheduler scheduler = getQueueScheduler();
-            spider = Spider.create(footballIntegralPageProcessor).setScheduler(scheduler);
-            spider.addPipeline(footballIntegralPipeline);
-            spider.startRequest(requests);
-            spider.thread(getThreadCount());
-            spider.start();
-        }
-        return spider;
     }
 }

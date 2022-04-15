@@ -5,8 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.ys.common.constant.CrawlerConstant;
 import org.ys.core.model.CoreParameter;
 import org.ys.core.service.CoreParameterService;
+import us.codecraft.webmagic.Request;
+import us.codecraft.webmagic.Spider;
+import us.codecraft.webmagic.pipeline.Pipeline;
+import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
+
+import java.util.List;
 
 /**
  * 基础爬虫controller，定义通用方法
@@ -52,6 +58,24 @@ public class BaseCrawlerController {
     }
 
     /**
+     * 获取是否重新爬取已下载数据
+     * @return
+     */
+    protected boolean getCrawlerAgainFlag(){
+        CoreParameter crawTAgainParam = null;
+        try {
+            crawTAgainParam = coreParameterService.queryCoreParameterByParamCode(CrawlerConstant.CRAW_AGAIN_FLAG);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(null == crawTAgainParam || StringUtils.isEmpty(crawTAgainParam.getParamValue())){
+            return false;
+        }else{
+            return Boolean.parseBoolean(crawTAgainParam.getParamValue());
+        }
+    }
+
+    /**
      * 获取过滤器
      * @return
      */
@@ -59,5 +83,23 @@ public class BaseCrawlerController {
         QueueScheduler scheduler = new QueueScheduler();
         scheduler.setDuplicateRemover(new BloomFilterDuplicateRemover(1000000));
         return scheduler;
+    }
+
+    /**
+     * 根据request启动爬虫
+     * @param requests
+     * @return
+     */
+    protected Spider getSpider(List<Request> requests, PageProcessor pageProcessor, Pipeline pipeline) {
+        Spider spider = null;
+        if(null != requests && requests.size() > 0){
+            QueueScheduler scheduler = getQueueScheduler();
+            spider = Spider.create(pageProcessor).setScheduler(scheduler);
+            spider.addPipeline(pipeline);
+            spider.startRequest(requests);
+            spider.thread(getThreadCount());
+            spider.start();
+        }
+        return spider;
     }
 }

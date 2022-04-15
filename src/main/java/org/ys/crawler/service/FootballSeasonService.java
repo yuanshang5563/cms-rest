@@ -17,6 +17,14 @@ public interface FootballSeasonService {
     public FootballSeason queryFootballSeasonById(String footballSeasonId) throws Exception;
 
     /**
+     * 根据Id获取全部属性(包括非数据库属性)
+     * @param footballSeasonId
+     * @return
+     * @throws Exception
+     */
+    public FootballSeason queryFootballSeasonOfFullFieldById(String footballSeasonId) throws Exception;
+
+    /**
      * 保存
      * @param footballSeason
      * @throws Exception
