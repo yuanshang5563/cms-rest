@@ -118,4 +118,20 @@ public interface FootballSeasonCategoryService {
      * @throws Exception
      */
     public List<CascaderTreeItem> findSeasonCascaderItemBySeasonId(String footballSeasonId) throws Exception;
+
+    /**
+     * 填充赛季类别的非数据库字段
+     * @param footballSeasonCategories
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeasonCategory> fillFootballSeasonCategories(List<FootballSeasonCategory> footballSeasonCategories) throws Exception;
+
+    /**
+     * 根据联赛id获取最新赛季类别
+     * @param footballLeagueMatchId
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeasonCategory> queryLatestFootballSeasonCategoryByLeagueMatchId(String footballLeagueMatchId) throws Exception;
 }

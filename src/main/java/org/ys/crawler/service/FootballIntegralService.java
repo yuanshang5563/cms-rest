@@ -149,4 +149,12 @@ public interface FootballIntegralService {
      * @throws Exception
      */
     public int queryRoundScoreCountBySeasonCategoryId(String footballSeasonCategoryId) throws Exception;
+
+    /**
+     * 填充指定积分数据的非数据库字段信息
+     * @param footballIntegrals
+     * @return
+     * @throws Exception
+     */
+    public List<FootballIntegral> fillFootballIntegrals(List<FootballIntegral> footballIntegrals) throws Exception;
 }

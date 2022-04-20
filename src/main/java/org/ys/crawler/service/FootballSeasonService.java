@@ -124,4 +124,12 @@ public interface FootballSeasonService {
      * @throws Exception
      */
     public FootballSeason queryLatestFootballSeasonByLeagueMatch(String footballLeagueMatchId) throws Exception;
+
+    /**
+     * 填充赛季的非数据库字段信息
+     * @param footballSeasons
+     * @return
+     * @throws Exception
+     */
+    public List<FootballSeason> fillFootballSeasons(List<FootballSeason> footballSeasons) throws Exception;
 }

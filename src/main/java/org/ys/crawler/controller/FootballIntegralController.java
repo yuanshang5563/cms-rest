@@ -117,7 +117,7 @@ public class FootballIntegralController extends BaseCrawlerController{
                 if(StringUtils.contains(leagueMatch.getFootballLeagueMatchName(),"杯")){
                     continue;
                 }
-                List<Request> requestList = getRequestsByLeagueMatch(leagueMatch, LeiDataCrawlerConstant.LEIDATA_CRAWLER_INTEGRAL_TYPE);
+                List<Request> requestList = getRequestsByLeagueMatch(leagueMatch);
                 if(null != requestList && requestList.size() > 0){
                     requests.addAll(requestList);
                 }
@@ -149,7 +149,7 @@ public class FootballIntegralController extends BaseCrawlerController{
                     return HttpResult.ok("杯赛没有积分不爬取！");
                 }
             }
-            List<Request> requests = getRequestsByLeagueMatch(leagueMatch,null);
+            List<Request> requests = getRequestsByLeagueMatch(leagueMatch);
             spider = getSpider(requests,footballIntegralPageProcessor,footballIntegralPipeline);
         }
         if(null != spider){
@@ -170,6 +170,19 @@ public class FootballIntegralController extends BaseCrawlerController{
     public HttpResult startIntegralCrawlerBySeason(@RequestParam String footballSeasonId) throws Exception{
         Spider spider = null;
         if(StringUtils.isNotEmpty(footballSeasonId)){
+            //判断是不是最新赛季，是最新赛季删除积分数据重新爬取
+            FootballSeason footballSeason = footballSeasonService.queryFootballSeasonById(footballSeasonId.trim());
+            if(null != footballSeason && StringUtils.isNotEmpty(footballSeason.getFootballLeagueMatchId())){
+                FootballSeason latestSeason = footballSeasonService.queryLatestFootballSeasonByLeagueMatch(footballSeason.getFootballLeagueMatchId());
+                if(null != latestSeason){
+                    List<FootballIntegral> integrals = footballIntegralService.queryFootballIntegralsBySeasonId(latestSeason.getFootballSeasonId());
+                    if(null != integrals && integrals.size() > 0){
+                        for (FootballIntegral integral : integrals) {
+                            footballIntegralService.delFootballIntegralById(integral.getFootballIntegralId());
+                        }
+                    }
+                }
+            }
             List<FootballSeasonCategory> categories = footballSeasonCategoryService.queryFootballSeasonCategoryBySeasonId(footballSeasonId);
             if(null != categories && categories.size() > 0){
                 List<Request> requests = new ArrayList<Request>();
@@ -192,11 +205,10 @@ public class FootballIntegralController extends BaseCrawlerController{
     /**
      * 根据联赛爬取积分数据
      * @param leagueMatch
-     * @param crawType
      * @return
      * @throws Exception
      */
-    private List<Request> getRequestsByLeagueMatch(FootballLeagueMatch leagueMatch,String crawType) throws Exception {
+    private List<Request> getRequestsByLeagueMatch(FootballLeagueMatch leagueMatch) throws Exception {
         if(null == leagueMatch){
             return null;
         }
@@ -205,18 +217,34 @@ public class FootballIntegralController extends BaseCrawlerController{
         if(null != seasonCategories && seasonCategories.size() > 0){
             String middleUrl = leagueMatch.getLeagueMatchUrl().replace(LeiDataCrawlerConstant.LEIDATA_CRAWLER_LEAGUE_MATCH_MIDDLE_WORD
                     , LeiDataCrawlerConstant.LEIDATA_CRAWLER_INTEGRAL_MIDDLE_WORD);
+            List<FootballSeasonCategory> latestCategories = footballSeasonCategoryService.queryLatestFootballSeasonCategoryByLeagueMatchId(leagueMatch.getFootballLeagueMatchId());
+            Set<String> latestCategoryIds = new HashSet<String>();
+            List<FootballIntegral> footballIntegralList = new ArrayList<FootballIntegral>();
+            if(null != latestCategories && latestCategories.size() > 0){
+                for (FootballSeasonCategory latestCategory : latestCategories) {
+                    latestCategoryIds.add(latestCategory.getFootballSeasonCategoryId());
+                    List<FootballIntegral> footballIntegrals = footballIntegralService.queryFootballIntegralsBySeasonCategoryId(latestCategory.getFootballSeasonCategoryId());
+                    if(null != footballIntegrals && footballIntegrals.size() > 0){
+                        footballIntegralList.addAll(footballIntegrals);
+                    }
+                }
+            }
+            //删除最新赛季的积分数据，重新爬取
+            if(footballIntegralList.size() > 0){
+                for (FootballIntegral footballIntegral : footballIntegralList) {
+                    footballIntegralService.delFootballIntegralById(footballIntegral.getFootballIntegralId());
+                }
+            }
             Set<String> categoryIds = new HashSet<String>();
             for (FootballSeasonCategory category : seasonCategories) {
                 //如果轮数不大于1轮，没有积分数据
                 if(category.getRoundCount() <= getIntegralRoundCount()){
                     continue;
                 }
-                //总爬虫不重复爬取旧赛季类别的数据
-                if(StringUtils.isNotEmpty(crawType) && StringUtils.equals(crawType, LeiDataCrawlerConstant.LEIDATA_CRAWLER_INTEGRAL_TYPE)){
-                    boolean existsFlag = footballIntegralService.isExistsIntegralByCategoryId(categoryIds, category);
-                    if(existsFlag){
-                        continue;
-                    }
+                //爬虫不重复爬取旧赛季类别的积分数据,除最新赛季类别
+                boolean existsFlag = footballIntegralService.isExistsIntegralByCategoryId(categoryIds, category);
+                if(existsFlag){
+                    continue;
                 }
                 getRequestBySeasonCategory(category, requests, middleUrl);
             }
@@ -234,9 +262,9 @@ public class FootballIntegralController extends BaseCrawlerController{
         if(null == seasonCategory){
             return null;
         }
-        if(seasonCategory.getRoundCount() <= getIntegralRoundCount()){
-            return null;
-        }
+        //if(seasonCategory.getRoundCount() <= getIntegralRoundCount()){
+        //    return null;
+        //}
         String footballSeasonId = seasonCategory.getFootballSeasonId();
         FootballSeason footballSeason = footballSeasonService.queryFootballSeasonById(footballSeasonId);
         if(null == footballSeason){
@@ -268,7 +296,7 @@ public class FootballIntegralController extends BaseCrawlerController{
         if(null != seasonCategory && null != requests && StringUtils.isNotEmpty(middleUrl)){
             String url = LeiDataCrawlerConstant.LEIDATA_CRAWLER_API_URL + middleUrl + seasonCategory.getFootballSeasonCategoryUrl();
             int roundCount = seasonCategory.getRoundCount();
-            if (roundCount > getIntegralRoundCount()) {
+            if (roundCount > 0) {
                 String fullUrl = url + "?r=" + roundCount;
                 Request request = new Request(fullUrl);
                 request.putExtra(LeiDataCrawlerConstant.LEIDATA_CRAWLER_FOOTBALL_SEASON_CATEGORY, seasonCategory);

@@ -101,6 +101,12 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballSeason> footballSeasons = footballSeasonMapper.selectByExample(example);
+        fillFootballSeasons(footballSeasons);
+        return new PageBean<FootballSeason>(footballSeasons);
+    }
+
+    @Override
+    public List<FootballSeason> fillFootballSeasons(List<FootballSeason> footballSeasons) throws Exception {
         if(null != footballSeasons && footballSeasons.size() > 0){
             Map<String,FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
             for (FootballSeason footballSeason : footballSeasons) {
@@ -114,7 +120,7 @@ public class FootballSeasonServiceImpl implements FootballSeasonService {
                 footballSeason.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
             }
         }
-        return new PageBean<FootballSeason>(footballSeasons);
+        return footballSeasons;
     }
 
     @Override

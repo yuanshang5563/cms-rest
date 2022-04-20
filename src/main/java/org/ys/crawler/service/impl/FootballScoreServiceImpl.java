@@ -207,6 +207,11 @@ public class FootballScoreServiceImpl implements FootballScoreService {
             }
             List<FootballScore> footballScores = queryFootballScoresBySeasonCategoryId(footballSeasonCategory.getFootballSeasonCategoryId());
             if(null != footballScores && footballScores.size() > 0 && (footballScores.size() == scoreRoundCount*roundCount)){
+                for (FootballScore footballScore : footballScores) {
+                    if(null == footballScore.getHomeScore() || null == footballScore.getAwayScore()){
+                        return false;
+                    }
+                }
                 return true;
             }
         }
@@ -226,6 +231,11 @@ public class FootballScoreServiceImpl implements FootballScoreService {
             }
             List<FootballScore> footballScores = queryFootballScoresBySeasonCategoryIdAndRound(footballSeasonCategory.getFootballSeasonCategoryId(),round);
             if(null != footballScores && footballScores.size() > 0 && (footballScores.size() == scoreRoundCount)){
+                for (FootballScore footballScore : footballScores) {
+                    if(null == footballScore.getHomeScore() || null == footballScore.getAwayScore()){
+                        return false;
+                    }
+                }
                 return true;
             }
         }

@@ -109,6 +109,12 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballSeasonCategory> footballSeasonCategories = footballSeasonCategoryMapper.selectByExample(example);
+        fillFootballSeasonCategories(footballSeasonCategories);
+        return new PageBean<FootballSeasonCategory>(footballSeasonCategories);
+    }
+
+    @Override
+    public List<FootballSeasonCategory> fillFootballSeasonCategories(List<FootballSeasonCategory> footballSeasonCategories) throws Exception {
         if(null != footballSeasonCategories && footballSeasonCategories.size() > 0){
             Map<String, FootballSeason> seasonMap = new HashMap<String,FootballSeason>();
             Map<String, FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
@@ -132,7 +138,21 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
                 footballSeasonCategory.setFootballLeagueMatchName(leagueMatch.getFootballLeagueMatchName());
             }
         }
-        return new PageBean<FootballSeasonCategory>(footballSeasonCategories);
+        return footballSeasonCategories;
+    }
+
+    @Override
+    public List<FootballSeasonCategory> queryLatestFootballSeasonCategoryByLeagueMatchId(String footballLeagueMatchId) throws Exception {
+        if(StringUtils.isEmpty(footballLeagueMatchId)){
+            return null;
+        }
+        FootballSeason footballSeason = footballSeasonService.queryLatestFootballSeasonByLeagueMatch(footballLeagueMatchId.trim());
+        if(null == footballSeason){
+            return null;
+        }
+        FootballSeasonCategoryExample example = new FootballSeasonCategoryExample();
+        example.createCriteria().andFootballSeasonIdEqualTo(footballSeason.getFootballSeasonId());
+        return footballSeasonCategoryMapper.selectByExample(example);
     }
 
     @Override
@@ -200,4 +220,5 @@ public class FootballSeasonCategoryServiceImpl implements FootballSeasonCategory
         }
         return treeItems;
     }
+
 }

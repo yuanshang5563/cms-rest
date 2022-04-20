@@ -113,6 +113,12 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
         }
         PageHelper.startPage(pageNum, pageSize, true);
         List<FootballIntegral> footballIntegrals = footballIntegralMapper.selectByExample(example);
+        fillFootballIntegrals(footballIntegrals);
+        return new PageBean<FootballIntegral>(footballIntegrals);
+    }
+
+    @Override
+    public List<FootballIntegral> fillFootballIntegrals(List<FootballIntegral> footballIntegrals) throws Exception {
         if(null != footballIntegrals && footballIntegrals.size() > 0){
             Map<String, FootballTeam> teamMap = new HashMap<String,FootballTeam>();
             Map<String,FootballLeagueMatch> leagueMatchMap = new HashMap<String,FootballLeagueMatch>();
@@ -163,7 +169,7 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
                 }
             }
         }
-        return new PageBean<FootballIntegral>(footballIntegrals);
+        return footballIntegrals;
     }
 
     @Override
@@ -218,6 +224,7 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
         FootballIntegralExample example = new FootballIntegralExample();
         example.createCriteria().andFootballSeasonIdEqualTo(StringUtils.trim(footballSeasonId));
         List<FootballIntegral> integrals = footballIntegralMapper.selectByExample(example);
+        example.setOrderByClause(" integral_total desc ");
         return integrals;
     }
 
@@ -228,6 +235,7 @@ public class FootballIntegralServiceImpl implements FootballIntegralService {
         }
         FootballIntegralExample example = new FootballIntegralExample();
         example.createCriteria().andFootballSeasonCategoryIdEqualTo(StringUtils.trim(footballSeasonCategoryId));
+        example.setOrderByClause(" integral_total desc ");
         return footballIntegralMapper.selectByExample(example);
     }
 
