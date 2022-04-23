@@ -165,4 +165,12 @@ public interface FootballScoreService {
      * @throws Exception
      */
     public List<FootballScore> fillFootballScores(List<FootballScore> footballScores) throws Exception;
+
+    /**
+     * 根据指定条件查询联赛Id
+     * @param example
+     * @return
+     * @throws Exception
+     */
+    public List<String> selectLeagueMatchesByExample(FootballScoreExample example) throws Exception;
 }

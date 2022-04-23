@@ -95,4 +95,6 @@ public interface FootballScoreMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(FootballScore record);
+
+    List<String> selectLeagueMatchesByExample(FootballScoreExample example);
 }

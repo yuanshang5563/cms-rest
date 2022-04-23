@@ -335,8 +335,25 @@ public class FootballScoreServiceImpl implements FootballScoreService {
                 if(null != seasonCategory){
                     score.setFootballSeasonCategoryName(seasonCategory.getFootballSeasonCategoryName());
                 }
+//                if(null != score.getHomeScore() && null != score.getAwayScore()){
+//                    if(score.getHomeScore() - score.getAwayScore() > 0){
+//                        score.setMatchResult("胜");
+//                    } else if(score.getHomeScore() - score.getAwayScore() < 0){
+//                        score.setMatchResult("负");
+//                    } else {
+//                        score.setMatchResult("平");
+//                    }
+//                }
             }
         }
         return footballScores;
+    }
+
+    @Override
+    public List<String> selectLeagueMatchesByExample(FootballScoreExample example) throws Exception {
+        if(null == example){
+            return null;
+        }
+        return footballScoreMapper.selectLeagueMatchesByExample(example);
     }
 }

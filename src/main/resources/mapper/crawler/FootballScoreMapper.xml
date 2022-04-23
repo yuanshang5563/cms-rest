@@ -399,4 +399,12 @@
       leidata_score_id = #{leidataScoreId,jdbcType=VARCHAR}
     where football_score_id = #{footballScoreId,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectLeagueMatchesByExample" parameterType="org.ys.crawler.model.FootballScoreExample" resultType="java.lang.String">
+    SELECT football_league_match_id from cr_football_score
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    GROUP BY football_league_match_id
+  </select>
 </mapper>

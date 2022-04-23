@@ -2,6 +2,8 @@ package org.ys.analysis.controller.vo;
 
 import org.ys.common.vo.BasecCondition;
 
+import java.util.List;
+
 /**
  * 用于传递前后分数查询分析参数
  */
@@ -12,6 +14,7 @@ public class FootballScoreAnalysisCondition extends BasecCondition {
     private String awayFootballTeamId;
     private String footballLeagueMatchId;
     private Integer lastNum;
+    private String[] footballLeagueMatchIds;
 
     public String getFootballSeasonCategoryId() {
         return footballSeasonCategoryId;
@@ -59,5 +62,13 @@ public class FootballScoreAnalysisCondition extends BasecCondition {
 
     public void setLastNum(Integer lastNum) {
         this.lastNum = lastNum;
+    }
+
+    public String[] getFootballLeagueMatchIds() {
+        return footballLeagueMatchIds;
+    }
+
+    public void setFootballLeagueMatchIds(String[] footballLeagueMatchIds) {
+        this.footballLeagueMatchIds = footballLeagueMatchIds;
     }
 }
